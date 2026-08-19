@@ -1,0 +1,51 @@
+services:
+  orders-api:
+    build:
+      context: ./orders-api
+    environment:
+      APP_MESSAGE: local-compose
+      DATA_DIR: /data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    volumes:
+      - orders-data:/data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    cpus: 0.5
+    networks:
+      - backend
+
+  storefront:
+    build:
+      context: ./storefront
+    depends_on:
+      orders-api:
+        condition: service_healthy
+    environment:
+      ORDERS_API_URL: http://orders-api:8080
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    cpus: 0.25
+    ports:
+      - "8080:8080"
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend: {}
+  backend:
+    internal: true
+
+volumes:
+  orders-data: {}

@@ -1,0 +1,38 @@
+# Credentials and local Azure state
+.azure/
+.env
+.env.*
+!.env.example
+*.kubeconfig
+kubeconfig
+secrets/
+*.pem
+*.pfx
+*.key
+
+# Local learner configuration and evidence
+.aks-labs/
+artifacts/
+evidence/
+*.local.json
+*.local.bicepparam
+
+# Language and test output
+__pycache__/
+*.py[cod]
+.pytest_cache/
+coverage/
+dist/
+build/
+
+# Editors and operating systems
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
+
+# IaC output
+*.jsonc
+infra/**/main.json

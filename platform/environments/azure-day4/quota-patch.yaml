@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: orders
+  namespace: orders
+spec:
+  hard:
+    limits.cpu: "12"
+    limits.memory: 6Gi
+    pods: "40"
+    requests.cpu: "12"
+    requests.memory: 4Gi

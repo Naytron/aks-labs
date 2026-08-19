@@ -1,0 +1,47 @@
+name: Validate AKS course
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: course-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-validation:
+    name: Application, IaC, manifests, and course
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Install pinned manifest validator
+        run: bash ./tests/install-kubeconform.sh
+
+      - name: Install Bicep
+        run: az bicep install
+
+      - name: Run static validation
+        shell: pwsh
+        run: ./scripts/test-static.ps1
+
+      - name: Check first-party documentation links
+        run: python3 tests/check_external_links.py
+
+      - name: Build course images
+        run: |
+          docker build --tag aks-labs/orders-api:ci app/orders-api
+          docker build --tag aks-labs/storefront:ci app/storefront
+
+      - name: Lint installer shell
+        run: shellcheck .devcontainer/install-tools.sh tests/install-kubeconform.sh

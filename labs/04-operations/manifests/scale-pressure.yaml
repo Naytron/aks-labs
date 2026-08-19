@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scale-pressure
+  namespace: orders
+  labels:
+    aks-course: level400
+    purpose: scale-pressure
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      purpose: scale-pressure
+  template:
+    metadata:
+      labels:
+        aks-course: level400
+        purpose: scale-pressure
+    spec:
+      automountServiceAccountToken: false
+      nodeSelector:
+        workload: general
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: pause
+          image: python:3.14.0-slim-trixie@sha256:0aecac02dc3d4c5dbb024b753af084cafe41f5416e02193f1ce345d671ec966e
+          command:
+            - python
+            - -c
+            - import time; time.sleep(1800)
+          resources:
+            requests:
+              cpu: 3000m
+              memory: 64Mi
+            limits:
+              cpu: 3000m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true

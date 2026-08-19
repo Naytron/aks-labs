@@ -1,0 +1,38 @@
+name: E2E local bootcamp smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-local-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-e2e:
+    name: Dev Container, Compose, and kind
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Install pinned Dev Container CLI
+        run: npm install --global @devcontainers/cli@0.88.0
+
+      - name: Run safe local E2E
+        shell: pwsh
+        run: ./scripts/test-e2e.ps1 -LocalOnly
+
+      - name: Upload redacted E2E evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: aks-bootcamp-e2e-${{ github.run_id }}
+          path: artifacts/e2e/
+          if-no-files-found: error
+          retention-days: 14

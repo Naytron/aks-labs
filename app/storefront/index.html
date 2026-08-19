@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AKS Orders Lab</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; margin: 2rem auto; max-width: 48rem; padding: 0 1rem; }
+    form, article { border: 1px solid #ccc; border-radius: .5rem; margin: 1rem 0; padding: 1rem; }
+    label { display: block; margin: .5rem 0; }
+    input, button { font: inherit; padding: .4rem; }
+    #status { min-height: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>AKS Orders Lab</h1>
+  <p>A deliberately small workload for platform engineering exercises.</p>
+  <form id="order-form">
+    <label>Item <input id="item" required maxlength="100" value="book"></label>
+    <label>Quantity <input id="quantity" type="number" min="1" max="100" value="1"></label>
+    <button type="submit">Create order</button>
+  </form>
+  <p id="status" role="status"></p>
+  <section id="orders" aria-live="polite"></section>
+  <script>
+    const status = document.getElementById("status");
+    async function refresh() {
+      const response = await fetch("/api/orders");
+      const orders = await response.json();
+      document.getElementById("orders").innerHTML = orders.map(
+        order => `<article><strong>${order.item}</strong> x ${order.quantity}<br><small>${order.id}</small></article>`
+      ).join("");
+    }
+    document.getElementById("order-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          item: document.getElementById("item").value,
+          quantity: Number(document.getElementById("quantity").value)
+        })
+      });
+      status.textContent = response.ok ? "Order created" : "Order failed";
+      await refresh();
+    });
+    refresh().catch(() => { status.textContent = "Orders API unavailable"; });
+  </script>
+</body>
+</html>

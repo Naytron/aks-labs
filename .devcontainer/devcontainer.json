@@ -1,0 +1,47 @@
+{
+  "name": "AKS Level 400 Labs",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "version": "2.88.0",
+      "installBicep": true
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "installDockerBuildx": true,
+      "installDockerComposeSwitch": false
+    },
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "7.6"
+    }
+  },
+  "containerEnv": {
+    "AZURE_CORE_COLLECT_TELEMETRY": "false",
+    "POWERSHELL_TELEMETRY_OPTOUT": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-bicep",
+        "ms-azuretools.vscode-containers",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-vscode.powershell",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "files.eol": "\n",
+        "terminal.integrated.defaultProfile.linux": "pwsh",
+        "yaml.schemas": {
+          "kubernetes": [
+            "platform/**/*.yaml",
+            "solutions/**/*.yaml"
+          ]
+        }
+      }
+    }
+  },
+  "postCreateCommand": "pwsh -NoLogo -NoProfile -File ./scripts/preflight.ps1 -LocalOnly",
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orders-config
+  namespace: orders
+data:
+  APP_MESSAGE: "AKS Level 400"
+  ORDERS_API_URL: "http://orders-api:8080"

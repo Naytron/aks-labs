@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-api
+  namespace: orders
+  labels:
+    app.kubernetes.io/name: orders-api
+    app.kubernetes.io/part-of: aks-orders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: orders-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: orders-api
+        app.kubernetes.io/part-of: aks-orders
+    spec:
+      containers:
+        - name: orders-api
+          image: aks-labs/orders-api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: APP_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: orders-config
+                  key: APP_MESSAGE
+            - name: DATA_DIR
+              value: /tmp/data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-api
+  namespace: orders
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: orders-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: 30080
