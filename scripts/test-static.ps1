@@ -30,7 +30,8 @@ try {
         'infra/automatic/platform.bicep',
         'infra/standard/main.bicep',
         'infra/standard/platform.bicep',
-        'infra/standard/spot-pool.bicep'
+        'infra/standard/spot-pool.bicep',
+        'infra/standard/arc-runner-pool.bicep'
     )) {
         Invoke-Checked az @('bicep', 'build', '--file', $template, '--stdout') | Out-Null
     }
@@ -62,7 +63,8 @@ try {
     foreach ($manifest in @(
         'labs/03-security-delivery/manifests/connectivity-probe.yaml',
         'labs/04-operations/manifests/scale-pressure.yaml',
-        'labs/04-operations/manifests/spot-workload.yaml'
+        'labs/04-operations/manifests/spot-workload.yaml',
+        'platform/arc/failures/deny-egress.yaml'
     )) {
         Invoke-Checked kubeconform @(
             '-strict',
@@ -71,6 +73,11 @@ try {
             $manifest
         )
     }
+
+    Invoke-Checked pwsh @(
+        '-NoProfile',
+        '-File', (Join-Path $root 'scripts/test-arc-static.ps1')
+    )
 } finally {
     Pop-Location
 }

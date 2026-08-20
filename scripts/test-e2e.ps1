@@ -10,6 +10,19 @@ param(
     [string]$Branch = 'main',
     [string]$PlatformGroupObjectId = '',
     [string]$ApplicationGroupObjectId = '',
+    [switch]$ArcExtension,
+    [ValidatePattern('^$|^https://github\.com/[^/]+/[^/]+(?:\.git)?$')]
+    [string]$ArcRepositoryUrl = '',
+    [ValidatePattern('^$|^[0-9]+$')]
+    [string]$ArcGitHubAppId = '',
+    [ValidatePattern('^$|^[0-9]+$')]
+    [string]$ArcGitHubAppInstallationId = '',
+    [string]$ArcGitHubAppPrivateKeyPath = '',
+    [ValidateRange(2, 5)]
+    [int]$ArcMaxRunners = 3,
+    [ValidatePattern('^[A-Za-z0-9_.-]+\.ya?ml$')]
+    [string]$ArcWorkflowFile = 'arc-scale-test.yml',
+    [string]$ArcBranch = 'main',
     [switch]$SkipAutomatic,
     [switch]$SkipLocal,
     [switch]$KeepResourcesOnFailure,
@@ -26,6 +39,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'e2e/common.ps1')
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'arc-common.ps1')
 
 if ($LocalOnly -and $LiveAzure) {
     throw '-LocalOnly and -LiveAzure cannot be combined.'
@@ -161,6 +175,73 @@ function Invoke-AzureNoWritePhase {
     return [bool]$passed
 }
 
+function Invoke-ArcPrerequisitePhase {
+    if (-not $ArcExtension) {
+        Add-E2ENonRunResult `
+            -Phase '05A' `
+            -Name 'Optional ARC prerequisites' `
+            -Status SKIPPED `
+            -Observed 'Optional post-capstone ARC extension was not requested.' `
+            -Critical $false
+        return $true
+    }
+    if (-not $LiveAzure) {
+        Add-E2ENonRunResult `
+            -Phase '05A' `
+            -Name 'Optional ARC prerequisites' `
+            -Status BLOCKED `
+            -Expected 'Explicit live Azure mode for the paid runner node-pool exercise.' `
+            -Observed '-ArcExtension was supplied without -LiveAzure.' `
+            -Remediation 'Use the static module by default or add the live charge acknowledgement for an instructor pilot.' `
+            -Critical $true
+        return $false
+    }
+
+    $requiredValues = @{
+        ArcRepositoryUrl = $ArcRepositoryUrl
+        ArcGitHubAppId = $ArcGitHubAppId
+        ArcGitHubAppInstallationId = $ArcGitHubAppInstallationId
+        ArcGitHubAppPrivateKeyPath = $ArcGitHubAppPrivateKeyPath
+    }
+    $missing = @($requiredValues.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object Key)
+    if ($missing.Count -gt 0) {
+        Add-E2ENonRunResult `
+            -Phase '05A' `
+            -Name 'Optional ARC prerequisites' `
+            -Status BLOCKED `
+            -Expected 'Private sandbox URL, GitHub App IDs, and ignored/external private-key path.' `
+            -Observed "Missing parameter(s): $($missing -join ', ')." `
+            -Remediation 'Complete docs/instructor-arc-setup.md before requesting the live extension.' `
+            -Critical $true
+        return $false
+    }
+
+    $passed = Invoke-E2EStep `
+        -Phase '05A' `
+        -Name 'Optional ARC private-sandbox preflight' `
+        -Expected 'Private repository, authenticated GitHub CLI, workflow, key file, and pinned chart render pass without writes.' `
+        -ErrorStatus BLOCKED `
+        -PassThru `
+        -Remediation 'Fix repository visibility/App scope, GitHub authentication, ignored key path, workflow copy, or Helm 3/chart access.' `
+        -ContinueOnError `
+        -Action {
+            $null = Assert-ArcPrivateKeyFile -Path $ArcGitHubAppPrivateKeyPath
+            $slug = Assert-PrivateArcRepository -RepositoryUrl $ArcRepositoryUrl
+            & gh workflow view $ArcWorkflowFile --repo $slug 1>$null 2>$null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Private sandbox workflow '$ArcWorkflowFile' is missing."
+            }
+            Invoke-Checked pwsh @(
+                '-NoProfile',
+                '-File', (Join-Path $repoRoot 'scripts/deploy-arc.ps1'),
+                '-RepositoryUrl', $ArcRepositoryUrl,
+                '-MaxRunners', "$ArcMaxRunners",
+                '-DryRun'
+            )
+        }
+    return [bool]$passed
+}
+
 function Get-ConservativeHourlyEstimate {
     $config = Get-LabConfiguration
     $filter = [Uri]::EscapeDataString(
@@ -174,7 +255,8 @@ function Get-ConservativeHourlyEstimate {
             $_.meterName -notmatch 'Spot'
         }
     $vmRate = if ($items) { [decimal]($items | Sort-Object retailPrice | Select-Object -First 1).retailPrice } else { 1 }
-    return [Math]::Max(2, [decimal](3 * $vmRate + 0.5))
+    $maximumNodeCount = if ($ArcExtension) { 3 + $ArcMaxRunners } else { 3 }
+    return [Math]::Max(2, [decimal]($maximumNodeCount * $vmRate + 0.5))
 }
 
 function Assert-LiveBudget {
@@ -258,6 +340,7 @@ function Invoke-LiveAzurePhases {
     $automaticReady = $false
     $standardReady = $false
     $personasConfigured = $false
+    $arcAttempted = $false
     try {
         if ($SkipAutomatic) {
             Add-E2ENonRunResult -Phase '06' -Name 'AKS Automatic' -Status SKIPPED -Observed 'Skipped by -SkipAutomatic.' -Critical $false
@@ -308,11 +391,14 @@ function Invoke-LiveAzurePhases {
                 Invoke-Checked pwsh @('-NoProfile', '-File', (Join-Path $repoRoot 'scripts/validate-lab.ps1'), '-Gate', 'Day2')
                 Invoke-Checked pwsh @('-NoProfile', '-File', (Join-Path $repoRoot 'scripts/cleanup-lab.ps1'), '-Mode', 'Daily')
                 Invoke-Checked pwsh @('-NoProfile', '-File', (Join-Path $repoRoot 'scripts/start-lab.ps1'), '-Environment', 'standard')
-                Invoke-Checked pwsh @('-NoProfile', '-File', (Join-Path $repoRoot 'scripts/validate-lab.ps1'), '-Environment', 'standard', '-Check', 'Workload')
+                Invoke-Checked pwsh @('-NoProfile', '-File', (Join-Path $repoRoot 'scripts/validate-lab.ps1'), '-Gate', 'Day5')
             }
 
         if (-not $standardReady) {
             Add-E2ENonRunResult -Phase '08-10' -Name 'Days 3-5 live phases' -Status BLOCKED -Observed 'Standard cluster did not become ready.' -Remediation 'Repeat in a working dedicated AKS subscription.' -Critical $true
+            if ($ArcExtension) {
+                Add-E2ENonRunResult -Phase '10A' -Name 'Optional ARC live extension' -Status BLOCKED -Observed 'Standard cluster did not become ready.' -Remediation 'Run the extension only after the Standard and Day 5 gates pass.' -Critical $true
+            }
             return
         }
 
@@ -408,6 +494,43 @@ function Invoke-LiveAzurePhases {
                 }
                 Invoke-Checked pwsh @('-NoProfile', '-File', (Join-Path $repoRoot 'scripts/validate-lab.ps1'), '-Environment', 'standard', '-Check', 'Workload')
             }
+
+        if ($ArcExtension) {
+            $arcAttempted = $true
+            Invoke-E2EStep `
+                -Phase '10A' `
+                -Name 'Optional ARC runner and node autoscaling' `
+                -Expected 'Pinned ARC installs, the private matrix workflow succeeds, runners are ephemeral, security gates pass, and runner nodes return to zero.' `
+                -ErrorStatus BLOCKED `
+                -ContinueOnError `
+                -Remediation 'Inspect GitHub queue, controller/listener logs, runner custom resources, scheduler events, node-pool state, quota, and egress.' `
+                -Action {
+                    Assert-LiveBudget -LiveStart $liveStart -HourlyEstimate $hourlyEstimate
+                    Invoke-Checked pwsh @(
+                        '-NoProfile',
+                        '-File', (Join-Path $repoRoot 'scripts/deploy-arc.ps1'),
+                        '-RepositoryUrl', $ArcRepositoryUrl,
+                        '-GitHubAppId', $ArcGitHubAppId,
+                        '-GitHubAppInstallationId', $ArcGitHubAppInstallationId,
+                        '-GitHubAppPrivateKeyPath', $ArcGitHubAppPrivateKeyPath,
+                        '-MaxRunners', "$ArcMaxRunners",
+                        '-Confirm:$false'
+                    )
+                    Invoke-Checked pwsh @(
+                        '-NoProfile',
+                        '-File', (Join-Path $repoRoot 'scripts/test-arc-scale.ps1'),
+                        '-RepositoryUrl', $ArcRepositoryUrl,
+                        '-WorkflowFile', $ArcWorkflowFile,
+                        '-Ref', $ArcBranch,
+                        '-NodeScaleDownTimeoutMinutes', '30'
+                    )
+                    Invoke-Checked pwsh @(
+                        '-NoProfile',
+                        '-File', (Join-Path $repoRoot 'scripts/validate-arc.ps1'),
+                        '-Check', 'Security'
+                    )
+                }
+        }
     } finally {
         if (-not $KeepResourcesOnFailure) {
             Invoke-E2EStep `
@@ -418,6 +541,18 @@ function Invoke-LiveAzurePhases {
                 -ContinueOnError `
                 -Action {
                     $cleanupErrors = [System.Collections.Generic.List[string]]::new()
+                    if ($arcAttempted) {
+                        try {
+                            Invoke-Checked pwsh @(
+                                '-NoProfile',
+                                '-File', (Join-Path $repoRoot 'scripts/cleanup-arc.ps1'),
+                                '-RepositoryUrl', $ArcRepositoryUrl,
+                                '-Confirm:$false'
+                            )
+                        } catch {
+                            $cleanupErrors.Add("ARC cleanup: $($_.Exception.Message)")
+                        }
+                    }
                     if ($personasConfigured) {
                         try {
                             Invoke-Checked pwsh @(
@@ -516,13 +651,14 @@ if ($SkipLocal) {
 }
 
 $azureNoWritePassed = Invoke-AzureNoWritePhase
-if ($LiveAzure -and -not $azureNoWritePassed) {
+$arcPrerequisitesPassed = Invoke-ArcPrerequisitePhase
+if ($LiveAzure -and (-not $azureNoWritePassed -or ($ArcExtension -and -not $arcPrerequisitesPassed))) {
     Add-E2ENonRunResult `
         -Phase '06-10' `
         -Name 'Live Azure bootcamp path' `
         -Status BLOCKED `
-        -Observed 'Critical Azure no-write phase did not pass.' `
-        -Remediation 'Resolve preflight, validate, and what-if blockers before paid deployment.' `
+        -Observed 'A critical Azure no-write or optional ARC prerequisite phase did not pass.' `
+        -Remediation 'Resolve all requested no-write and private-sandbox gates before paid deployment.' `
         -Critical $true
 } else {
     Invoke-LiveAzurePhases

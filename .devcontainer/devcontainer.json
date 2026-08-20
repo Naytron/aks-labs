@@ -13,6 +13,9 @@
       "installDockerBuildx": true,
       "installDockerComposeSwitch": false
     },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "2.96.0"
+    },
     "ghcr.io/devcontainers/features/powershell:1": {
       "version": "7.6"
     }
@@ -42,6 +45,6 @@
       }
     }
   },
-  "postCreateCommand": "pwsh -NoLogo -NoProfile -File ./scripts/preflight.ps1 -LocalOnly",
+  "postCreateCommand": "git config --global --add safe.directory \"$(pwd)\" && pwsh -NoLogo -NoProfile -File ./scripts/preflight.ps1 -LocalOnly",
   "remoteUser": "vscode"
 }

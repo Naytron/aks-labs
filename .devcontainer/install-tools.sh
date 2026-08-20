@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC1091
 source /tmp/tools.env
 
 case "$(uname -m)" in
@@ -43,6 +44,15 @@ curl --fail --silent --show-error --location "https://get.helm.sh/${helm_archive
 (cd "$workdir" && sha256sum --check helm.sha256)
 tar -xzf "$workdir/$helm_archive" -C "$workdir"
 install -m 0755 "$workdir/linux-${arch}/helm" /usr/local/bin/helm
+
+helm3_sha_var="HELM3_LINUX_${arch^^}_SHA256"
+helm3_archive="helm-${HELM3_VERSION}-linux-${arch}.tar.gz"
+download_verified \
+  "https://get.helm.sh/${helm3_archive}" \
+  "${!helm3_sha_var}" \
+  "$workdir/$helm3_archive"
+tar -xzf "$workdir/$helm3_archive" -C "$workdir"
+install -m 0755 "$workdir/linux-${arch}/helm" /usr/local/bin/helm3
 
 kind_sha_var="KIND_LINUX_${arch^^}_SHA256"
 install_binary \

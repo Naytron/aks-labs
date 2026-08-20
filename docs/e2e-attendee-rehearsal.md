@@ -65,6 +65,15 @@ For each challenge, the observer completes [the observation sheet](e2e-observati
 - The runbook and ADR templates are sufficient.
 - Two instructors independently score within five points.
 
+### Optional ARC extension
+
+- Private sandbox visibility and GitHub App scope are checked before any paid deployment.
+- The attendee finds the Helm 3 requirement, key-handling rule, and public-repository prohibition without coach explanation.
+- The safe workflow is copied only to the private sandbox and remains manual, shell-only, bounded, and unprivileged.
+- `test-arc-scale.ps1` and the learner timeline distinguish GitHub assignment, ARC runner scaling, scheduling, and AKS node scaling.
+- The scheduling failure is diagnosed from `FailedScheduling` evidence and restored without removing the runner taint.
+- Cleanup proves GitHub registrations, ARC resources, Secret, namespaces, runner pool, and local key are absent before Standard deletion.
+
 ## Viability thresholds
 
 - No critical setup or safety step depends on instructor tribal knowledge.
@@ -78,6 +87,7 @@ For each challenge, the observer completes [the observation sheet](e2e-observati
 - At least 75 percent of scheduled instructional time is hands-on.
 - Attendee explains the outcome in their own words.
 - Capstone scoring is repeatable.
+- When ARC is delivered, no private identifier or credential appears in learner evidence and its extra cleanup gate passes.
 
 ## Decision
 

@@ -28,6 +28,9 @@ jobs:
       - name: Install pinned manifest validator
         run: bash ./tests/install-kubeconform.sh
 
+      - name: Install pinned Helm 3 for ARC
+        run: bash ./tests/install-helm3.sh
+
       - name: Install Bicep
         run: az bicep install
 
@@ -44,4 +47,4 @@ jobs:
           docker build --tag aks-labs/storefront:ci app/storefront
 
       - name: Lint installer shell
-        run: shellcheck .devcontainer/install-tools.sh tests/install-kubeconform.sh
+        run: shellcheck .devcontainer/install-tools.sh tests/install-helm3.sh tests/install-kubeconform.sh

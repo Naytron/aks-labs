@@ -1,6 +1,6 @@
 # AKS bootcamp QA report
 
-**QA date:** 2026-08-17
+**QA date:** 2026-08-20
 **Attendee baseline:** Azure fundamentals, basic CLI/networking/container knowledge, no Kubernetes
 
 ## Outcome
@@ -36,6 +36,8 @@ Five concise cheat sheets now cover:
 4. Entra/RBAC/Workload Identity/Key Vault/NetworkPolicy;
 5. scaling, reliability, upgrades, backup/DR, and cost.
 
+The optional ARC extension adds a sixth operations sheet for GitHub job assignment, ARC runner scaling, Kubernetes scheduling, AKS node scaling, security evidence, and safe cleanup.
+
 ## Local evidence
 
 - Full Dev Container with Azure CLI, PowerShell, Docker-in-Docker, kubectl, Helm, kind, Flux, kubelogin, Kustomize, and kubeconform: passed.
@@ -65,6 +67,19 @@ Five concise cheat sheets now cover:
 - Live mode is implemented but remains release-blocked by the AKS subscription and prepared Entra persona prerequisites below.
 - Manual attendee rehearsal artifacts are ready but require a real target attendee/instructor/observer session.
 - The reviewed live-mode gate refuses paid deployment when no-write checks are blocked; this was verified with zero tagged Azure resources.
+- Final post-ARC `-LocalOnly -SkipDevContainerBuild` run: **READY**; repository/static/content 29+88 seconds, Compose 21 seconds, and kind learner path/incidents 122 seconds.
+- ARC remains `SKIPPED` in the default/local path. An explicit `-ArcExtension` request without live mode returned structured **BLOCKED** at phase `05A` before any external mutation.
+
+### Optional ARC extension evidence
+
+- ARC controller and runner scale-set charts are pinned to stable `0.14.2`; OCI digests are recorded and verified during static validation.
+- GitHub's documented Helm 3 prerequisite is satisfied by pinned Helm 3.21.4 alongside the course's Helm 4 tool.
+- The controller and Actions runner images use immutable manifest digests.
+- Both charts render with the course values and pass kubeconform; no credential is required for static validation.
+- The private workflow template is manual-only, shell-only, bounded, unprivileged, and is not active under the public repository's `.github/workflows`.
+- The guarded deployment rejects public `naytron/aks-labs`, requires GitHub CLI to prove `PRIVATE` visibility, and creates the App Secret from a key file rather than Helm plaintext.
+- The separate runner-pool Bicep and all ARC PowerShell scripts parse/build in the Dev Container.
+- Live ARC remains blocked until a working Standard AKS deployment, private disposable repository, GitHub App, and human permission/revocation rehearsal are available.
 
 ## Live Azure evidence
 

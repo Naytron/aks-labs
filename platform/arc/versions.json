@@ -1,0 +1,13 @@
+{
+  "helmMajorVersion": 3,
+  "helmVersion": "3.21.4",
+  "controllerChart": "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller",
+  "controllerChartVersion": "0.14.2",
+  "controllerChartDigest": "sha256:3081ba15c41f0aa791058dedd2a7406fece24c9aeaa94956c268e5099427a452",
+  "controllerImage": "ghcr.io/actions/gha-runner-scale-set-controller:0.14.2@sha256:1b4c7f62e971ab259a4b8798e48e2adaad4af747f45990f474ea5feefa03531d",
+  "runnerScaleSetChart": "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set",
+  "runnerScaleSetChartVersion": "0.14.2",
+  "runnerScaleSetChartDigest": "sha256:579e3a1bdf4032b3c3de3e9b0880a4a6d3c1989a67c06010f680c1cc49524d11",
+  "runnerImage": "ghcr.io/actions/actions-runner:2.336.0@sha256:0cfdcc701ce933c6d243c6b0b2da767366dc9f2e99961d4c3754b0b78084cdda",
+  "releaseCommit": "9bb16ae49d0ce585d8e682aa7e2668a6e832d5d8"
+}

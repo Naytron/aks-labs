@@ -26,3 +26,17 @@ The post-deployment phase enables the AKS application-routing Gateway API implem
 ## Spot exercise
 
 `spot-pool.bicep` is intentionally separate. Deploy it only during Day 4 and remove the pool immediately afterward.
+
+## Optional ARC runner exercise
+
+`arc-runner-pool.bicep` is also separate from the core platform. It adds a regular-priority, tainted `User` pool that permits cluster-autoscaler scale-to-zero for ephemeral GitHub Actions runners.
+
+Preview, deploy, and remove it only for the optional post-capstone module:
+
+```powershell
+./scripts/manage-arc-runner-pool.ps1 -Action Preview
+./scripts/manage-arc-runner-pool.ps1 -Action Deploy
+./scripts/manage-arc-runner-pool.ps1 -Action Delete
+```
+
+The existing Standard cluster is a lab shortcut. Production platforms should evaluate a separate runner cluster to isolate arbitrary workflow code from application workloads.

@@ -29,6 +29,8 @@ See [the complete course map](docs/course-map.md).
 
 Attendees should read the [attendee guide](docs/attendee-guide.md) before prework and keep the [cheat-sheet index](docs/cheatsheets/README.md) open during class.
 
+After the required capstone, an [optional Level 400 ARC module](labs/06-arc-runners/README.md) covers private GitHub Actions runner scale sets, GitHub App authentication, dedicated scale-to-zero runner capacity, two-layer autoscaling, security, break/fix, and complete cleanup. It requires an instructor-prepared private sandbox repository and does not run on the public course repository.
+
 ## Recommended setup
 
 1. Use a dedicated lab subscription where you are **Owner**. The default Bicep path creates its own tagged resource groups and role assignments.
@@ -66,6 +68,7 @@ The default learner path targets roughly **USD 50-100**, not a guaranteed bill. 
 - Reuses one lab-sized AKS Standard cluster on Days 2-5.
 - Stops the cluster outside lab hours.
 - Makes premium observability, firewall, and multi-region deployments optional.
+- Keeps the ARC runner pool at zero when idle and removes it after the optional extension.
 - Uses Bicep `what-if` for expensive architecture exercises.
 - Validates cleanup and unexpected resources every day.
 

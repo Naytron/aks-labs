@@ -15,6 +15,7 @@
 - One lab AKS Standard cluster using a D-series system pool and an autoscaling user pool.
 - No persistent Managed Grafana, Azure Firewall, NAT Gateway, multi-region peer, or duplicate AKS cluster.
 - A temporary AKS Automatic cluster exists only during its comparison lab.
+- The optional ARC node pool permits zero nodes at idle, has an explicit maximum, and is deleted with the extension.
 
 The Standard cluster uses reduced nonproduction counts. Production guidance still requires availability-zone and replica decisions based on SLOs.
 
@@ -39,6 +40,8 @@ Start it before the next AKS exercise:
 ```
 
 An AKS stop operation does not stop every supporting Azure charge. ACR, disks, public IPs, and telemetry can still accrue cost.
+
+For the optional ARC module, `minRunners: 0` removes idle runner pods but does not force immediate AKS node removal. Observe the cluster-autoscaler cooldown, then run `cleanup-arc.ps1` before daily or final Standard cleanup.
 
 Budget notifications and Cost Management records are delayed; they are not an automatic shutoff. Use elapsed time, resource inventory, and the instructor hard-stop in addition to the budget.
 

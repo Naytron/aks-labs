@@ -1,0 +1,72 @@
+githubConfigUrl: ""
+githubConfigSecret: arc-github-app
+
+minRunners: 0
+maxRunners: 3
+runnerScaleSetName: arc-aks-lab
+
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-gha-rs-controller
+
+listenerTemplate:
+  spec:
+    nodeSelector:
+      kubernetes.io/os: linux
+      workload: general
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    containers:
+      - name: listener
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+
+template:
+  spec:
+    serviceAccountName: arc-runner
+    automountServiceAccountToken: false
+    nodeSelector:
+      kubernetes.io/os: linux
+      workload: github-runner
+    tolerations:
+      - key: workload
+        operator: Equal
+        value: github-runner
+        effect: NoSchedule
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    containers:
+      - name: runner
+        image: ghcr.io/actions/actions-runner:2.336.0@sha256:0cfdcc701ce933c6d243c6b0b2da767366dc9f2e99961d4c3754b0b78084cdda
+        command:
+          - /home/runner/run.sh
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source .devcontainer/tools.env
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "$script_dir/../.devcontainer/tools.env"
 
 case "$(uname -m)" in
   x86_64) arch=amd64 ;;

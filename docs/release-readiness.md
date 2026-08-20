@@ -32,6 +32,8 @@ Complete for each delivery region and subscription type.
 - [x] E2E result artifacts are GUID/token/secret-redacted.
 - [x] Copied incident bundles are recursively redacted.
 - [x] Manual no-Azure `workflow_dispatch` added.
+- [x] Final post-ARC local E2E decision READY.
+- [x] Optional ARC defaults to SKIPPED and explicit non-live request blocks before mutation.
 - [ ] Manual attendee/instructor/observer rehearsal completed.
 - [ ] Live E2E decision READY.
 
@@ -67,6 +69,22 @@ Complete for each delivery region and subscription type.
 - [ ] Day 5 three incidents and capstone scoring passed.
 - [x] Final resource group deletion and zero tagged inventory verified.
 - [x] Duration and observed/projected cost: Standard canceled after 30-minute no-node stall; no Cost Management row posted immediately.
+
+## Optional ARC extension
+
+- [x] Private-repository guard rejects public `naytron/aks-labs`.
+- [x] GitHub App Secret keys and file-only key handling match current ARC guidance.
+- [x] Helm 3.21.4 is installed alongside core-course Helm 4.
+- [x] Controller and runner scale-set charts pinned to ARC 0.14.2 with recorded OCI digests.
+- [x] Controller and runner images use immutable SHA-256 references.
+- [x] Dedicated regular-priority runner pool Bicep builds with min zero, bounded max, labels, and taint.
+- [x] Controller/listener remain on always-on general capacity; runner template selects only runner capacity.
+- [x] Controller and runner charts render and pass schema validation without credentials.
+- [x] Public repository contains only a `workflow_dispatch` private-sandbox template, not an active self-hosted workflow.
+- [x] Install, security, scale, failure, cleanup, and E2E contract tests are implemented.
+- [ ] Live private workflow scales runner pods and AKS nodes from zero and back.
+- [ ] GitHub App permission and revocation flow rehearsed with disposable personas.
+- [ ] Live scheduling incident and GitHub/Kubernetes/Azure cleanup gate passed.
 
 ## Cost reconciliation
 

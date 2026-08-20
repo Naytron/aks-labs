@@ -246,6 +246,8 @@ if ($Gate -in @('Day4', 'Day5')) {
     Test-Condition 'managed-prometheus' ($amaMetricsCount -ge 1) "$amaMetricsCount managed Prometheus collector pod(s) exist"
     & az aks nodepool show --resource-group (Get-LabConfiguration).StandardResourceGroup --cluster-name (Get-DeploymentOutputs -Environment standard).clusterName --name spot --output none --only-show-errors 2>$null
     Test-Condition 'spot-cleanup' ($LASTEXITCODE -ne 0) 'Spot node pool is absent at the gate'
+    & az aks nodepool show --resource-group (Get-LabConfiguration).StandardResourceGroup --cluster-name (Get-DeploymentOutputs -Environment standard).clusterName --name arcrunner --output none --only-show-errors 2>$null
+    Test-Condition 'arc-runner-cleanup' ($LASTEXITCODE -ne 0) 'Optional ARC runner node pool is absent at the core gate'
 }
 
 if ($Gate -eq 'Day1') {

@@ -27,7 +27,8 @@ All commands assume PowerShell from the repository root in the Dev Container.
 | Day 2 | No Standard cluster | `azure-day2` | Standard stopped |
 | Day 3 | Standard stopped | `azure-day3` through Flux | Standard stopped |
 | Day 4 | Standard stopped | `azure-day4` plus opt-in scaling | Standard stopped; Spot absent |
-| Day 5 | Standard stopped | Learner capstone | Standard deleted |
+| Day 5 | Standard stopped | Learner capstone | Standard deleted, or retained only for the instructor-approved ARC extension |
+| Optional ARC | Day 5 gate passed; Standard retained | Private runner scale set | ARC removed; runner pool absent; Standard deleted or stopped |
 
 Check state:
 
@@ -57,6 +58,10 @@ The instructor prepares two Entra test groups/accounts:
 
 If real accounts are unavailable, the instructor may use an authorization-only impersonation exercise. That simulation does **not** prove interactive Entra authentication and must be labeled accordingly.
 
+### Optional ARC extension
+
+The instructor must provide a disposable private sandbox repository and a narrowly scoped GitHub App installation. Never attach course runners to public `naytron/aks-labs` or a public fork. Keep the App private key outside Git, use the pinned `helm3` command for ARC read-only views, and follow [the instructor ARC setup](instructor-arc-setup.md).
+
 ## Evidence
 
 Automated gates write to `evidence/`. Manual deliverables use the supplied worksheets/templates. Do not submit screenshots as the only evidence and review generated files before sharing them.
@@ -78,6 +83,7 @@ Automated gates write to `evidence/`. Manual deliverables use the supplied works
 - Stop Standard after Days 2-4.
 - Delete Spot immediately after its exercise.
 - Delete Standard after Day 5 and verify the resource group is absent.
+- If the optional ARC module follows Day 5, delay Standard deletion until ARC releases, GitHub registration, namespaces, Secret, and runner pool are removed.
 - Budget alerts are delayed notifications, not an automatic shutoff.
 
 See [cost controls](cost-controls.md) and [security rules](../SECURITY.md).

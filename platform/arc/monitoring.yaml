@@ -1,0 +1,30 @@
+apiVersion: azmonitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: arc-controller
+  namespace: arc-systems
+  labels:
+    aks-course: level400
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller-manager
+      app.kubernetes.io/name: gha-rs-controller
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+---
+apiVersion: azmonitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: arc-listener
+  namespace: arc-systems
+  labels:
+    aks-course: level400
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: runner-scale-set-listener
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s

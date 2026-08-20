@@ -11,7 +11,7 @@ Use this path for the complete course, including local containers and `kind`.
 5. Run **Dev Containers: Reopen in Container**.
 6. Confirm the automatic local preflight passes.
 
-The image pins Azure CLI, Bicep, PowerShell, Kubernetes CLI, Helm, kind, Flux, kubelogin, Kustomize, and kubeconform. Docker runs inside the development container so the lab does not depend on host socket permissions.
+The image pins Azure CLI, Bicep, PowerShell, Kubernetes CLI, Helm 4 for the core course, Helm 3 for the optional ARC module, GitHub CLI, kind, Flux, kubelogin, Kustomize, and kubeconform. Docker runs inside the development container so the lab does not depend on host socket permissions.
 
 Recommended host capacity: 4 CPU cores, 12 GB available RAM, and 30 GB free disk. Allocate at least 6 GB RAM to Docker for the two-node `kind` lab.
 
@@ -25,6 +25,8 @@ Use this adaptation:
 2. Use ACR Tasks through `build-images.ps1 -Target acr` instead of local Docker builds.
 3. Begin live workload deployment on the short-lived AKS Automatic environment.
 4. Do not store kubeconfig, secret material, or generated evidence in persistent Cloud Shell storage after class.
+
+The optional ARC module requires the supported Dev Container path because it relies on pinned Helm 3, GitHub CLI private-repository verification, and temporary key-file handling.
 
 This fallback uses more Azure time and might exceed the lower end of the budget target.
 

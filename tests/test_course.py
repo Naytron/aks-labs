@@ -1,3 +1,4 @@
+import json
 import re
 import unittest
 from pathlib import Path
@@ -14,6 +15,7 @@ class CourseStructureTests(unittest.TestCase):
             "03-security-delivery",
             "04-operations",
             "05-capstone",
+            "06-arc-runners",
         }
         actual = {path.name for path in (ROOT / "labs").iterdir() if path.is_dir()}
         self.assertEqual(actual, expected)
@@ -112,6 +114,102 @@ class CourseStructureTests(unittest.TestCase):
                 if pattern.search(content):
                     failures.append(str(path.relative_to(ROOT)))
         self.assertFalse(failures, f"Potential secrets found in {failures}")
+
+    def test_arc_extension_has_complete_assets(self) -> None:
+        expected = (
+            "labs/06-arc-runners/README.md",
+            "labs/06-arc-runners/arc-decision-record.md",
+            "labs/06-arc-runners/arc-evidence.md",
+            "labs/06-arc-runners/templates/arc-scale-test.yml",
+            "solutions/arc-runners.md",
+            "coach/arc-runners.md",
+            "docs/instructor-arc-setup.md",
+            "docs/cheatsheets/arc-runner-operations.md",
+            "infra/standard/arc-runner-pool.bicep",
+            "platform/arc/controller-values.yaml",
+            "platform/arc/runner-scale-set-values.yaml",
+            "platform/arc/versions.json",
+        )
+        for relative_path in expected:
+            self.assertTrue((ROOT / relative_path).is_file(), relative_path)
+
+    def test_arc_workflow_template_is_manual_and_unprivileged(self) -> None:
+        workflow = (
+            ROOT / "labs" / "06-arc-runners" / "templates" / "arc-scale-test.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch", workflow)
+        self.assertIn("permissions: {}", workflow)
+        self.assertIn("runs-on: arc-aks-lab", workflow)
+        self.assertIn("timeout-minutes:", workflow)
+        self.assertNotRegex(
+            workflow,
+            r"(?m)^\s*(pull_request|pull_request_target|push|schedule|workflow_call):",
+        )
+        self.assertNotIn("uses:", workflow)
+        for forbidden in ("docker.sock", "privileged", "kubeconfig", "cluster-admin"):
+            self.assertNotIn(forbidden, workflow.lower())
+        self.assertFalse(
+            (ROOT / ".github" / "workflows" / "arc-scale-test.yml").exists()
+        )
+
+    def test_arc_dependencies_and_images_are_immutable(self) -> None:
+        versions = json.loads(
+            (ROOT / "platform" / "arc" / "versions.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(versions["helmMajorVersion"], 3)
+        self.assertRegex(versions["helmVersion"], r"^3\.\d+\.\d+$")
+        self.assertEqual(
+            versions["controllerChartVersion"],
+            versions["runnerScaleSetChartVersion"],
+        )
+        self.assertRegex(versions["controllerChartVersion"], r"^\d+\.\d+\.\d+$")
+        for key in ("controllerChartDigest", "runnerScaleSetChartDigest"):
+            self.assertRegex(versions[key], r"^sha256:[a-f0-9]{64}$")
+        for key in ("controllerImage", "runnerImage"):
+            self.assertRegex(versions[key], r"^[^@\s]+@sha256:[a-f0-9]{64}$")
+
+        values = "\n".join(
+            (ROOT / "platform" / "arc" / filename).read_text(encoding="utf-8")
+            for filename in ("controller-values.yaml", "runner-scale-set-values.yaml")
+        )
+        self.assertNotIn(":latest", values)
+        self.assertIn(versions["runnerImage"], values)
+        controller_match = re.fullmatch(
+            r"(.+):([^@]+)@(sha256:[a-f0-9]{64})", versions["controllerImage"]
+        )
+        self.assertIsNotNone(controller_match)
+        controller_repository, controller_tag, controller_digest = (
+            controller_match.groups()
+        )
+        self.assertIn(f"repository: {controller_repository}", values)
+        self.assertIn(f"tag: {controller_tag}@{controller_digest}", values)
+
+    def test_arc_node_pool_and_repository_guards_are_bounded(self) -> None:
+        bicep = (ROOT / "infra" / "standard" / "arc-runner-pool.bicep").read_text(
+            encoding="utf-8"
+        )
+        for token in (
+            "minCount: 0",
+            "maxCount: maxCount",
+            "mode: 'User'",
+            "'workload=github-runner:NoSchedule'",
+            "workload: 'github-runner'",
+            "scaleSetPriority: 'Regular'",
+        ):
+            self.assertIn(token, bicep)
+
+        helper = (ROOT / "scripts" / "arc-common.ps1").read_text(encoding="utf-8")
+        deploy = (ROOT / "scripts" / "deploy-arc.ps1").read_text(encoding="utf-8")
+        self.assertIn("naytron/aks-labs", helper.lower())
+        self.assertIn("visibility", helper)
+        self.assertIn("PRIVATE", helper)
+        for key in (
+            "github_app_id",
+            "github_app_installation_id",
+            "github_app_private_key",
+        ):
+            self.assertIn(key, deploy)
+        self.assertNotIn("github_app_private_key:", deploy)
 
 
 if __name__ == "__main__":

@@ -17,6 +17,12 @@
 | `collect-evidence.ps1` | Capture a redacted incident evidence bundle |
 | `set-user-pool-minimum.ps1` | Add/remove drain-test spare user capacity |
 | `manage-spot.ps1` | Preview, deploy, or delete the short-lived Spot pool |
+| `manage-arc-runner-pool.ps1` | Preview, deploy, or delete optional tainted runner capacity |
+| `deploy-arc.ps1` | Guarded GitHub App Secret creation and pinned ARC installation |
+| `validate-arc.ps1` | Validate ARC install, security, scale-to-zero, and cleanup gates |
+| `test-arc-scale.ps1` | Dispatch the private scale test and capture runner/node timing |
+| `inject-arc-failure.ps1` | Inject or restore one deterministic ARC failure |
+| `cleanup-arc.ps1` | Remove ARC and its runner pool in GitHub-safe order |
 | `backup-orders.ps1` | Create and verify an isolated SQLite restore |
 | `query-prometheus.ps1` | Run an authenticated PromQL instant query without exposing a token |
 | `cleanup-lab.ps1` | Stop or delete only tagged course resources |
@@ -34,6 +40,19 @@ E2E phase helpers live under `scripts/e2e/`; call the top-level harness rather t
 
 # Instructor-only paid path
 ./scripts/test-e2e.ps1 -LiveAzure -AcknowledgeAzureCharges -MaxBudgetUsd 50
+
+# Instructor-only ARC pilot, run inside the Dev Container
+./scripts/test-e2e.ps1 `
+  -LiveAzure `
+  -AcknowledgeAzureCharges `
+  -MaxBudgetUsd 50 `
+  -ArcExtension `
+  -ArcRepositoryUrl "https://github.com/<owner>/<private-sandbox-repository>" `
+  -ArcGitHubAppId "<github-app-id>" `
+  -ArcGitHubAppInstallationId "<github-app-installation-id>" `
+  -ArcGitHubAppPrivateKeyPath "/tmp/arc-github-app.pem"
 ```
+
+The E2E harness requires `.aks-labs` to be absent before it starts, so its temporary ARC key must use an external or container-temporary path. Delete that file after the run.
 
 Scripts never request or print credentials. Resource deletion requires exact course tags.

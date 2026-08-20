@@ -133,7 +133,9 @@ Before cleanup:
 ./scripts/validate-lab.ps1 -Gate Day5
 ```
 
-After assessment:
+After assessment, continue directly to [the optional ARC module](../06-arc-runners/README.md) if the instructor is delivering it. Pass the Day 5 gate but delay final resource-group deletion; keep Standard running and use the ARC cleanup contract before final lab deletion.
+
+Otherwise, delete the lab:
 
 ```powershell
 ./scripts/cleanup-lab.ps1 -Mode Final -Wait

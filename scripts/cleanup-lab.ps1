@@ -20,8 +20,34 @@ if ($groupExists -eq 'false') {
     exit 0
 }
 
+Assert-CourseResourceGroup $targetResourceGroup
+
+if ($Mode -in @('Daily', 'Final')) {
+    $clusters = Invoke-Checked az @(
+        'aks', 'list',
+        '--resource-group', $config.StandardResourceGroup,
+        '--output', 'json',
+        '--only-show-errors'
+    ) -Capture | ConvertFrom-Json
+    $standardCluster = @($clusters | Where-Object { $_.name -eq $config.StandardCluster }) |
+        Select-Object -First 1
+    $arcPoolExists = $false
+    if ($standardCluster) {
+        $nodePools = Invoke-Checked az @(
+            'aks', 'nodepool', 'list',
+            '--resource-group', $config.StandardResourceGroup,
+            '--cluster-name', $config.StandardCluster,
+            '--output', 'json',
+            '--only-show-errors'
+        ) -Capture | ConvertFrom-Json
+        $arcPoolExists = @($nodePools | Where-Object { $_.name -eq 'arcrunner' }).Count -eq 1
+    }
+    if ($arcPoolExists) {
+        throw 'Refusing Standard cleanup while the ARC runner pool exists. Finish or cancel jobs, then run cleanup-arc.ps1 first.'
+    }
+}
+
 if ($Mode -eq 'Daily') {
-    Assert-CourseResourceGroup $config.StandardResourceGroup
     $powerState = Invoke-Checked az @(
         'aks', 'show',
         '--resource-group', $config.StandardResourceGroup,
@@ -83,7 +109,6 @@ if ($Mode -eq 'Daily') {
 
 $resourceGroup = $targetResourceGroup
 
-Assert-CourseResourceGroup $resourceGroup
 if ($PSCmdlet.ShouldProcess($resourceGroup, 'Delete tagged course resource group')) {
     $arguments = @('group', 'delete', '--name', $resourceGroup, '--yes', '--only-show-errors')
     if (-not $Wait) {

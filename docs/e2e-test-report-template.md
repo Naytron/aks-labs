@@ -41,6 +41,7 @@
 | Day 3 | | | | |
 | Day 4 | | | | |
 | Day 5 | | | | |
+| Optional ARC | | | | |
 | Cleanup/cost | | | | |
 
 ## Cost and cleanup

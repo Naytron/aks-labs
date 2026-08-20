@@ -16,6 +16,12 @@ class E2EContractTests(unittest.TestCase):
             "$MaxBudgetUsd",
             "$KeepResourcesOnFailure",
             "[switch]$SkipLocal",
+            "[switch]$ArcExtension",
+            "$ArcRepositoryUrl",
+            "$ArcGitHubAppId",
+            "$ArcGitHubAppInstallationId",
+            "$ArcGitHubAppPrivateKeyPath",
+            "$ArcMaxRunners",
         ):
             self.assertIn(token, content)
         self.assertRegex(content, r"ValidateRange\(20,\s*50\)")
@@ -63,6 +69,17 @@ class E2EContractTests(unittest.TestCase):
         )
         for script in re.findall(r"(?:\./)?scripts/([A-Za-z0-9.-]+\.ps1)", docs):
             self.assertTrue((ROOT / "scripts" / script).is_file(), script)
+
+    def test_arc_e2e_is_explicit_and_preflight_blocked(self) -> None:
+        content = (ROOT / "scripts" / "test-e2e.ps1").read_text(encoding="utf-8")
+        self.assertIn("Invoke-ArcPrerequisitePhase", content)
+        self.assertIn("Assert-PrivateArcRepository", content)
+        self.assertIn("Assert-ArcPrivateKeyFile", content)
+        self.assertIn("Optional ARC runner and node autoscaling", content)
+        self.assertIn("scripts/cleanup-arc.ps1", content)
+        self.assertRegex(content, r"if \(\$ArcExtension\)")
+        self.assertIn("SKIPPED", content)
+        self.assertIn("BLOCKED", content)
 
 
 if __name__ == "__main__":

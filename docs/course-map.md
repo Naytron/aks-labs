@@ -36,4 +36,7 @@ The intended attendee has Azure fundamentals and basic CLI, networking, and cont
 
 ## Optional extension modules
 
-After the capstone: Windows node pools, service mesh, GPU/KAITO workloads, Fleet at scale, regulated baseline, and operator development. These are intentionally excluded from the core five days.
+- [GitHub Actions Runner Controller on AKS](../labs/06-arc-runners/README.md): private GitHub App authentication, ephemeral runner scale sets, a dedicated tainted node pool, ARC-versus-AKS autoscaling, security, operations, and cleanup.
+- Future extensions: Windows node pools, service mesh, GPU/KAITO workloads, Fleet at scale, regulated baseline, and operator development.
+
+Optional modules are intentionally excluded from the required five-day gates. The ARC module requires a private sandbox repository, disposable GitHub App installation, extra quota, and explicit instructor approval.
