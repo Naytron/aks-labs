@@ -114,7 +114,7 @@ Record names, conditions, chart versions, and timestamps only. Do not include Se
 ### Challenge 4 - Explain and observe two-layer autoscaling
 
 1. Copy [the scale test template](templates/arc-scale-test.yml) into `.github/workflows/arc-scale-test.yml` in the **private sandbox repository**, not this course repository.
-2. Replace `<arc-runner-scale-set-name>` with the scale set name reported by the deployment script.
+2. Confirm `runs-on: arc-aks-lab` matches the scale set name reported by the deployment script. Change it only if the instructor deliberately used a different name.
 3. Review the workflow before pushing it. Confirm it has only `workflow_dispatch`, shell steps, empty token permissions, a timeout, and no cluster or container-engine access.
 4. Push to the private sandbox repository.
 5. Start the read-only watches below, then use the course harness in another terminal to dispatch one run and capture count-only evidence:

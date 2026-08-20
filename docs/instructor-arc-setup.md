@@ -134,7 +134,7 @@ Copy `labs/06-arc-runners/templates/arc-scale-test.yml` only into:
 <private-sandbox-repository>\.github\workflows\arc-scale-test.yml
 ```
 
-Replace the runner scale set placeholder. Review before push:
+Confirm `runs-on: arc-aks-lab` matches the course scale set name. Change it only if the instructor deliberately selected a different name. Review before push:
 
 - only `workflow_dispatch`;
 - `permissions: {}`;
