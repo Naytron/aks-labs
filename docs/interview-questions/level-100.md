@@ -25,5 +25,6 @@ permalink: /interview-questions/level-100/
 16. **What would you do if** a production Pod repeatedly enters CrashLoopBackOff immediately after a release? (Tests: safe first response to application failure)
 17. **What would you do if** kubectl suddenly returned authorization errors for an engineer who previously had access? (Tests: access troubleshooting)
 18. **What would you do if** traffic increased rapidly while Pods and nodes were both near capacity? (Tests: basic scaling response)
+{: start="16" }
 
 <a href="{{ '/' | relative_url }}">Previous: Course home</a> | <a href="{{ '/interview-questions/' | relative_url }}">Question bank</a> | <a href="{{ '/interview-questions/level-200/' | relative_url }}">Next: Level 200</a>

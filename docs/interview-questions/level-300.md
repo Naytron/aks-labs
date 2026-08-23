@@ -25,5 +25,6 @@ permalink: /interview-questions/level-300/
 16. **What would you do if** a Cilium policy rollout isolated only some replicas and standard Kubernetes events showed no error? (Tests: eBPF datapath incident response)
 17. **What would you do if** a zonal failure coincided with an upgrade and protected stateful Pods could not reschedule? (Tests: compound availability incident)
 18. **What would you do if** a signed image passed admission but runtime behavior suggested the build pipeline was compromised? (Tests: supply-chain incident containment)
+{: start="16" }
 
 <a href="{{ '/interview-questions/level-200/' | relative_url }}">Previous: Level 200</a> | <a href="{{ '/interview-questions/' | relative_url }}">Question bank</a> | <a href="{{ '/interview-questions/level-400/' | relative_url }}">Next: Level 400</a>

@@ -25,5 +25,6 @@ permalink: /interview-questions/level-200/
 16. **What would you do if** an AKS upgrade stalled while workloads were protected by strict PodDisruptionBudgets? (Tests: upgrade disruption troubleshooting)
 17. **What would you do if** Pods in a private cluster could resolve internal names but could not reach an approved external API? (Tests: DNS and egress diagnosis)
 18. **What would you do if** KEDA added Pods but the Cluster Autoscaler did not provide enough schedulable nodes? (Tests: multi-layer autoscaling troubleshooting)
+{: start="16" }
 
 <a href="{{ '/interview-questions/level-100/' | relative_url }}">Previous: Level 100</a> | <a href="{{ '/interview-questions/' | relative_url }}">Question bank</a> | <a href="{{ '/interview-questions/level-300/' | relative_url }}">Next: Level 300</a>

@@ -350,6 +350,7 @@ class CourseStructureTests(unittest.TestCase):
 
             self.assertIn("## Production situations", content, filename)
             production = content.split("## Production situations", 1)[1]
+            self.assertIn('{: start="16" }', production, filename)
             production_questions = question_pattern.findall(production)
             self.assertEqual(
                 [int(number) for number, _ in production_questions],

@@ -25,5 +25,6 @@ permalink: /interview-questions/level-400/
 16. **What would you do if** a fleet-wide policy or GitOps change began degrading clusters in several regions at different rates? (Tests: fleet incident containment)
 17. **What would you do if** a region failed after replication lag had already exceeded the approved RPO? (Tests: executive disaster-recovery judgment)
 18. **What would you do if** evidence showed a privileged deployment workflow had been compromised across the enterprise platform? (Tests: enterprise credential compromise response)
+{: start="16" }
 
 <a href="{{ '/interview-questions/level-300/' | relative_url }}">Previous: Level 300</a> | <a href="{{ '/interview-questions/' | relative_url }}">Question bank</a> | <a href="{{ '/' | relative_url }}">Next: Course home</a>
