@@ -66,6 +66,10 @@ The instructor must provide a disposable private sandbox repository and a narrow
 
 Automated gates write to `evidence/`. Manual deliverables use the supplied worksheets/templates. Do not submit screenshots as the only evidence and review generated files before sharing them.
 
+## Self-assessment
+
+Use the [AKS interview question bank](https://naytron.github.io/aks-labs/interview-questions/) after each level. Answer aloud from first principles, add one production example where possible, and identify the evidence you would inspect before taking action. The question bank is not a substitute for completing a lab gate.
+
 ## Help ladder
 
 1. Restate the failed acceptance criterion.

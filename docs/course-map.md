@@ -40,3 +40,7 @@ The intended attendee has Azure fundamentals and basic CLI, networking, and cont
 - Future extensions: Windows node pools, service mesh, GPU/KAITO workloads, Fleet at scale, regulated baseline, and operator development.
 
 Optional modules are intentionally excluded from the required five-day gates. The ARC module requires a private sandbox repository, disposable GitHub App installation, extra quota, and explicit instructor approval.
+
+## Supplemental interview preparation
+
+Use the [Level 100-400 AKS question bank](https://naytron.github.io/aks-labs/interview-questions/) after each course stage for self-assessment or mock interviews. It is supplemental and does not replace the hands-on daily gates.

@@ -29,6 +29,8 @@ See [the complete course map](docs/course-map.md).
 
 Attendees should read the [attendee guide](docs/attendee-guide.md) before prework and keep the [cheat-sheet index](docs/cheatsheets/README.md) open during class.
 
+Review the course through [GitHub Pages](https://naytron.github.io/aks-labs/) and use the [Level 100-400 AKS interview question bank](https://naytron.github.io/aks-labs/interview-questions/) for progressive self-assessment.
+
 After the required capstone, an [optional Level 400 ARC module](labs/06-arc-runners/README.md) covers private GitHub Actions runner scale sets, GitHub App authentication, dedicated scale-to-zero runner capacity, two-layer autoscaling, security, break/fix, and complete cleanup. It requires an instructor-prepared private sandbox repository and does not run on the public course repository.
 
 ## Recommended setup

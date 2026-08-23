@@ -211,6 +211,181 @@ class CourseStructureTests(unittest.TestCase):
             self.assertIn(key, deploy)
         self.assertNotIn("github_app_private_key:", deploy)
 
+    def test_github_pages_site_contract(self) -> None:
+        expected = (
+            "docs/_config.yml",
+            "docs/index.md",
+            "docs/interview-questions/index.md",
+            "docs/interview-questions/level-100.md",
+            "docs/interview-questions/level-200.md",
+            "docs/interview-questions/level-300.md",
+            "docs/interview-questions/level-400.md",
+        )
+        for relative_path in expected:
+            self.assertTrue((ROOT / relative_path).is_file(), relative_path)
+
+        config = (ROOT / "docs" / "_config.yml").read_text(encoding="utf-8")
+        self.assertIn("theme: minima", config)
+        self.assertIn("url: https://naytron.github.io", config)
+        self.assertIn("baseurl: /aks-labs", config)
+
+        landing = (ROOT / "docs" / "index.md").read_text(encoding="utf-8")
+        self.assertIn("permalink: /", landing)
+        self.assertIn("/interview-questions/", landing)
+        self.assertIn("https://github.com/Naytron/aks-labs", landing)
+
+        expected_permalinks = {
+            "index.md": "/interview-questions/",
+            "level-100.md": "/interview-questions/level-100/",
+            "level-200.md": "/interview-questions/level-200/",
+            "level-300.md": "/interview-questions/level-300/",
+            "level-400.md": "/interview-questions/level-400/",
+        }
+        actual_permalinks: list[str] = []
+        bank = ROOT / "docs" / "interview-questions"
+        for filename, permalink in expected_permalinks.items():
+            content = (bank / filename).read_text(encoding="utf-8")
+            match = re.search(r"(?m)^permalink:\s+(\S+)$", content)
+            self.assertIsNotNone(match, filename)
+            self.assertEqual(match.group(1), permalink, filename)
+            actual_permalinks.append(match.group(1))
+        self.assertEqual(len(actual_permalinks), len(set(actual_permalinks)))
+
+        bank_index = (bank / "index.md").read_text(encoding="utf-8")
+        for audience in (
+            "Cloud Engineer",
+            "DevOps Engineer",
+            "Site Reliability Engineer",
+            "Platform Engineer",
+        ):
+            self.assertIn(audience, bank_index)
+        self.assertIn("question-only resource", bank_index)
+
+    def test_question_bank_level_contracts(self) -> None:
+        question_pattern = re.compile(
+            r"(?m)^(\d+)\.\s+(.+\(Tests: [^)]+\))\s*$"
+        )
+        required_topics = {
+            "level-100.md": (
+                "control plane",
+                "node pool",
+                "service",
+                "ingress",
+                "azure cni",
+                "persistentvolume",
+                "microsoft entra",
+                "rbac",
+                "secret",
+                "hpa",
+                "cluster autoscaler",
+            ),
+            "level-200.md": (
+                "node image",
+                "azure cni overlay",
+                "kubenet",
+                "networkpolicy",
+                "gateway api",
+                "ingress-nginx",
+                "private cluster",
+                "csi",
+                "workload identity",
+                "pod identity",
+                "vpa",
+                "keda",
+                "prometheus",
+                "grafana",
+                "flux",
+                "argo cd",
+                "github actions",
+                "azure devops",
+                "cost",
+            ),
+            "level-300.md": (
+                "maintenance window",
+                "maxsurge",
+                "pdb",
+                "topology spread",
+                "multi-tenancy",
+                "workload identity",
+                "key vault",
+                "cilium",
+                "slo",
+                "cluster autoscaler",
+                "defender",
+                "deployment safeguards",
+            ),
+            "level-400.md": (
+                "aks automatic",
+                "aks standard",
+                "fleet",
+                "multi-region",
+                "rto",
+                "rpo",
+                "restore validation",
+                "finops",
+                "arc",
+                "zero trust",
+                "kubenet",
+                "azure cni overlay",
+                "hundreds of clusters",
+            ),
+        }
+
+        bank = ROOT / "docs" / "interview-questions"
+        for filename, topics in required_topics.items():
+            content = (bank / filename).read_text(encoding="utf-8")
+            lowered = content.lower()
+            self.assertTrue(content.startswith("---"), filename)
+            self.assertIn("layout: page", content, filename)
+            self.assertIn("permalink: /interview-questions/", content, filename)
+
+            questions = question_pattern.findall(content)
+            self.assertEqual(len(questions), 18, filename)
+            self.assertEqual(
+                [int(number) for number, _ in questions],
+                list(range(1, 19)),
+                filename,
+            )
+            self.assertEqual(len(re.findall(r"\(Tests: [^)]+\)", content)), 18)
+
+            self.assertIn("## Production situations", content, filename)
+            production = content.split("## Production situations", 1)[1]
+            production_questions = question_pattern.findall(production)
+            self.assertEqual(
+                [int(number) for number, _ in production_questions],
+                [16, 17, 18],
+                filename,
+            )
+            for _, question in production_questions:
+                self.assertTrue(
+                    question.startswith("**What would you do if**"),
+                    f"{filename}: {question}",
+                )
+
+            for topic in topics:
+                self.assertIn(topic, lowered, f"{filename} missing {topic}")
+            for forbidden in ("## answers", "## answer key", "suggested answer"):
+                self.assertNotIn(forbidden, lowered, filename)
+
+    def test_question_bank_frames_legacy_technologies_as_migrations(self) -> None:
+        bank = ROOT / "docs" / "interview-questions"
+        level_200 = (bank / "level-200.md").read_text(encoding="utf-8").lower()
+        content = level_200 + "\n" + (
+            bank / "level-400.md"
+        ).read_text(encoding="utf-8").lower()
+        self.assertRegex(
+            content,
+            r"(?:legacy|migrat)[^\n]*kubenet|kubenet[^\n]*(?:legacy|migrat)",
+        )
+        self.assertRegex(
+            level_200,
+            r"(?:retired|unsupported|migrat)[^\n]*pod identity|pod identity[^\n]*(?:retired|unsupported|migrat)",
+        )
+        self.assertRegex(
+            level_200,
+            r"(?:retir|migrat)[^\n]*ingress-nginx|ingress-nginx[^\n]*(?:retir|migrat)",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,9 @@
+title: AKS Level 400 Bootcamp
+description: Hands-on AKS learning and interview preparation from fundamentals through production architecture.
+url: https://naytron.github.io
+baseurl: /aks-labs
+theme: minima
+markdown: kramdown
+header_pages:
+  - interview-questions/index.md
+show_excerpts: false
