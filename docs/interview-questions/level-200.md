@@ -4,6 +4,8 @@ title: AKS Interview Questions - Level 200
 permalink: /interview-questions/level-200/
 ---
 
+<a href="{{ '/interview-questions/quiz/?level=200' | relative_url }}">Start the interactive Level 200 quiz</a>
+
 1. How would you select a supported Kubernetes version and region features before creating an AKS cluster? (Tests: AKS version support and creation planning)
 2. How would you plan a safe control-plane, node-pool, and node image upgrade sequence? (Tests: upgrade and node image operations)
 3. How would you use multiple node pools, taints, tolerations, labels, and affinity to place workloads? (Tests: workload scheduling design)

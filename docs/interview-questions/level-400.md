@@ -4,6 +4,8 @@ title: AKS Interview Questions - Level 400
 permalink: /interview-questions/level-400/
 ---
 
+<a href="{{ '/interview-questions/quiz/?level=400' | relative_url }}">Start the interactive Level 400 quiz</a>
+
 1. How would you decide between AKS Automatic and AKS Standard for an enterprise workload portfolio? (Tests: managed platform operating-model selection)
 2. How would you design an AKS landing zone and platform architecture that separates central governance from application-team autonomy? (Tests: enterprise platform architecture)
 3. Which capabilities would you centralize with Azure Kubernetes Fleet Manager, and which would remain cluster-local? (Tests: multi-cluster fleet design)

@@ -68,7 +68,7 @@ Automated gates write to `evidence/`. Manual deliverables use the supplied works
 
 ## Self-assessment
 
-Use the [AKS interview question bank](https://naytron.github.io/aks-labs/interview-questions/) after each level. Answer aloud from first principles, add one production example where possible, and identify the evidence you would inspect before taking action. The question bank is not a substitute for completing a lab gate.
+Use the [interactive AKS quiz](https://naytron.github.io/aks-labs/interview-questions/quiz/) after each level. Answer aloud before revealing the guide, add one production example where possible, and identify the evidence you would inspect before taking action. The quiz is not a substitute for completing a lab gate.
 
 ## Help ladder
 

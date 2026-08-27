@@ -43,4 +43,4 @@ Optional modules are intentionally excluded from the required five-day gates. Th
 
 ## Supplemental interview preparation
 
-Use the [Level 100-400 AKS question bank](https://naytron.github.io/aks-labs/interview-questions/) after each course stage for self-assessment or mock interviews. It is supplemental and does not replace the hands-on daily gates.
+Use the [interactive Level 100-400 AKS quiz](https://naytron.github.io/aks-labs/interview-questions/quiz/) after each course stage for self-assessment, answer guides, Microsoft Learn follow-up, or mock interviews. It is supplemental and does not replace the hands-on daily gates.

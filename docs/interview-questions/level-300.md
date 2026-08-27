@@ -4,6 +4,8 @@ title: AKS Interview Questions - Level 300
 permalink: /interview-questions/level-300/
 ---
 
+<a href="{{ '/interview-questions/quiz/?level=300' | relative_url }}">Start the interactive Level 300 quiz</a>
+
 1. How would you turn the AKS secure baseline into enforceable cluster, identity, network, and workload controls? (Tests: secure baseline implementation)
 2. How would you design private connectivity from workloads to Azure PaaS services without public exposure? (Tests: private endpoints and name resolution)
 3. How would you combine maintenance windows, upgrade channels, maxSurge, PodDisruptionBudgets (PDBs), and topology spread constraints? (Tests: controlled maintenance and availability)

@@ -4,6 +4,8 @@ title: AKS Interview Questions - Level 100
 permalink: /interview-questions/level-100/
 ---
 
+<a href="{{ '/interview-questions/quiz/?level=100' | relative_url }}">Start the interactive Level 100 quiz</a>
+
 1. Which responsibilities belong to the AKS-managed control plane, and which belong to customer-managed node pools? (Tests: AKS shared-responsibility architecture)
 2. How do Pods, Deployments, ReplicaSets, and StatefulSets differ? (Tests: core Kubernetes workload objects)
 3. When should configuration live in a ConfigMap versus a Secret, and when should a Pod consume it through environment variables versus mounted files? (Tests: configuration source and delivery fundamentals)

@@ -1,0 +1,286 @@
+{
+  "level": 400,
+  "title": "Expert / Architecture and Production",
+  "questions": [
+    {
+      "id": "L400-Q01",
+      "question": "How would you decide between AKS Automatic and AKS Standard for an enterprise workload portfolio?",
+      "topic": "managed platform operating-model selection",
+      "answer": "Start with AKS Automatic when its curated networking, security, upgrade, and node-management choices meet workload requirements and the organization prefers lower platform toil. Choose AKS Standard when teams need controls or integrations that Automatic does not expose, and budget for the engineering and operational ownership that flexibility creates. Validate the choice against compliance, workload constraints, skills, supportability, and total cost rather than treating either mode as universally better.",
+      "learnMore": [
+        {
+          "title": "Plan an AKS design and operating model",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-start-here"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q02",
+      "question": "How would you design an AKS landing zone and platform architecture that separates central governance from application-team autonomy?",
+      "topic": "enterprise platform architecture",
+      "answer": "The platform team should own landing-zone concerns such as management groups, policy, identity, network topology, private DNS, approved cluster patterns, and shared observability. Application teams should receive bounded autonomy through namespaces or dedicated clusters, workload identities, quotas, policy-compliant templates, and self-service delivery paths. Define interfaces, escalation paths, and exception processes so central controls protect the enterprise without turning the platform team into a deployment bottleneck.",
+      "learnMore": [
+        {
+          "title": "AKS landing zone accelerator",
+          "url": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/aks/landing-zone-accelerator"
+        },
+        {
+          "title": "Baseline architecture for an AKS cluster",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks/baseline-aks"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q03",
+      "question": "Which capabilities would you centralize with Azure Kubernetes Fleet Manager, and which would remain cluster-local?",
+      "topic": "multi-cluster fleet design",
+      "answer": "Centralize fleet membership, staged update orchestration, resource placement, and organization-wide policy or configuration distribution where consistency produces clear value. Keep latency-sensitive control loops, workload runtime decisions, cluster-specific secrets, local break-glass actions, and failure containment within each cluster. The boundary should prevent a fleet control-plane or configuration mistake from becoming an unconstrained enterprise-wide blast radius.",
+      "learnMore": [
+        {
+          "title": "Overview of Azure Kubernetes Fleet Manager",
+          "url": "https://learn.microsoft.com/en-us/azure/kubernetes-fleet/overview"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q04",
+      "question": "How would you choose between multi-region active-active and active-passive designs for a critical AKS service?",
+      "topic": "multi-region architecture tradeoffs",
+      "answer": "Use active-active when the business needs low failover time, global capacity, and regional traffic distribution and can absorb the added cost and data-consistency complexity. Use active-passive when simpler operations and lower steady-state cost outweigh a longer tested failover, while sizing and warming the secondary environment to meet the approved RTO. Base the decision on failure modes, data semantics, capacity, routing, compliance, and rehearsed recovery evidence rather than an assumption of zero downtime.",
+      "learnMore": [
+        {
+          "title": "AKS baseline architecture for multiple regions",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-multi-region/aks-multi-cluster"
+        },
+        {
+          "title": "Reliability in Azure Kubernetes Service",
+          "url": "https://learn.microsoft.com/en-us/azure/reliability/reliability-aks"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q05",
+      "question": "How would you design private AKS connectivity across hub-spoke or Virtual WAN, including DNS and deterministic egress?",
+      "topic": "enterprise private network architecture",
+      "answer": "Place private cluster endpoints and workloads in planned address spaces, route spoke traffic through the hub or Virtual WAN, and resolve private endpoint zones through linked zones and approved DNS forwarders. Force outbound traffic through an explicitly selected AKS outbound type, Azure Firewall, or another controlled egress path with stable source addresses, filtering, logging, and required service endpoints or private endpoints. Model pod and service CIDRs, asymmetric routing, DNS failure, SNAT capacity, and on-premises reachability before deployment because these are costly day-zero decisions.",
+      "learnMore": [
+        {
+          "title": "Create a private AKS cluster",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/private-clusters"
+        },
+        {
+          "title": "Outbound types for AKS egress",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/egress-outboundtype"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q06",
+      "question": "How would you assign SLO and error-budget ownership across platform and application teams?",
+      "topic": "reliability operating model",
+      "answer": "Derive end-to-end service indicators from user outcomes, then assign each team SLOs for the components and dependencies it can control. The platform team owns cluster and shared-service objectives, while application teams own workload availability, latency, correctness, capacity, and safe release behavior. A shared error-budget policy should define measurement, alerting, escalation, release slowdown, and who accepts business risk when dependency budgets are exhausted.",
+      "learnMore": [
+        {
+          "title": "Reliability metrics and service-level objectives",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/reliability/metrics"
+        },
+        {
+          "title": "AKS Well-Architected service guide",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/service-guides/azure-kubernetes-service"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q07",
+      "question": "How would business RTO and RPO requirements shape data replication, application-consistent backup, Azure Backup or Velero selection, restore validation, cluster configuration, and regional recovery?",
+      "topic": "disaster recovery strategy",
+      "answer": "RPO determines replication and backup frequency, while RTO determines automation, standby capacity, dependency recovery order, and whether a second region must be warm. Treat Kubernetes resources and application data separately: select Azure Backup where its supported resources and governance fit, use Velero when portability or plugin coverage is required, and coordinate database-native quiescing or snapshot hooks because a volume snapshot alone might not be application-consistent. Prove the design with isolated, recurring restores that validate data integrity, secrets, identities, networking, cluster configuration, and measured recovery time.",
+      "learnMore": [
+        {
+          "title": "Azure Kubernetes Service backup overview",
+          "url": "https://learn.microsoft.com/en-us/azure/backup/azure-kubernetes-service-backup-overview"
+        },
+        {
+          "title": "Business continuity, high availability, and disaster recovery concepts",
+          "url": "https://learn.microsoft.com/en-us/azure/reliability/concept-business-continuity-high-availability-disaster-recovery"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q08",
+      "question": "How would you govern Kubernetes and node-image upgrades across a large fleet while preserving explicit stop conditions?",
+      "topic": "fleet-wide upgrade governance",
+      "answer": "Define approved versions, support deadlines, maintenance windows, health gates, and a staged Fleet update strategy that promotes from canary and nonproduction clusters to progressively larger production groups. Stop promotion on SLO burn, failed probes, workload regressions, capacity loss, security alerts, or operator review, and retain evidence from each stage. Rehearse workload disruption controls and recovery paths, including surge capacity, disruption budgets, and version-compatible rollback or redeployment, because upgrades cannot guarantee zero downtime.",
+      "learnMore": [
+        {
+          "title": "Fleet update orchestration",
+          "url": "https://learn.microsoft.com/en-us/azure/kubernetes-fleet/update-orchestration"
+        },
+        {
+          "title": "Node images in AKS",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/node-images"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q09",
+      "question": "How would you allocate shared AKS costs, expose unit economics, and create FinOps incentives without encouraging unsafe utilization?",
+      "topic": "enterprise AKS FinOps",
+      "answer": "Combine Azure billing data with cluster, namespace, workload, request, and usage data to allocate direct costs and distribute shared costs using a documented rule. Publish unit measures such as cost per request, tenant, or business transaction together with utilization, reliability, and carbon or capacity context. Reward efficient requests, autoscaling, scheduling, and architecture choices, but preserve reliability floors, security controls, and error-budget gates so teams are not paid to remove necessary headroom.",
+      "learnMore": [
+        {
+          "title": "AKS cost analysis",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/cost-analysis"
+        },
+        {
+          "title": "Microsoft FinOps guidance",
+          "url": "https://learn.microsoft.com/en-us/cloud-computing/finops/"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q10",
+      "question": "How would you build private deployment paths from GitHub Actions or Azure DevOps through self-hosted runners or Actions Runner Controller (ARC) scale sets?",
+      "topic": "private continuous delivery architecture",
+      "answer": "Run ephemeral, isolated self-hosted agents or ARC runner scale-set pods on networks that can resolve and reach the private AKS API while tightly controlling outbound access. Use workload identity federation and least-privilege, environment-scoped deployment identities instead of long-lived secrets, and separate untrusted pull-request execution from privileged release runners. Harden and patch runner images, prevent cross-job state reuse, log deployment actions, require approvals for production, and keep a tested path to revoke access.",
+      "learnMore": [
+        {
+          "title": "Azure Pipelines self-hosted agents",
+          "url": "https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents"
+        },
+        {
+          "title": "Private AKS cluster connectivity",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/private-clusters"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q11",
+      "question": "How would you threat-model a compromised CI/CD workflow that can deploy to production AKS clusters?",
+      "topic": "deployment credential and supply-chain security",
+      "answer": "Model theft of workflow tokens, runner takeover, dependency or action substitution, artifact tampering, malicious manifests, approval bypass, and abuse of Kubernetes or Azure privileges. Reduce impact with federated short-lived credentials, protected environments, pinned and reviewed dependencies, signed artifacts with admission policy, isolated ephemeral runners, least privilege, and immutable audit logs. Detection must correlate source, workflow, identity, registry, Azure activity, and Kubernetes audit evidence. Recovery should support immediate credential revocation, deployment freeze, artifact quarantine, known-good redeployment, and verification that persistence was removed.",
+      "learnMore": [
+        {
+          "title": "Workload identity federation",
+          "url": "https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation"
+        },
+        {
+          "title": "Incident response for a compromised application identity",
+          "url": "https://learn.microsoft.com/en-us/security/operations/incident-response-playbook-compromised-malicious-app"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q12",
+      "question": "How would you migrate a live estate from legacy kubenet to Azure CNI Overlay with Cilium while controlling workload risk?",
+      "topic": "network modernization strategy",
+      "answer": "Inventory address space, routes, network policies, egress dependencies, unsupported configurations, and every workload assumption about pod reachability before selecting an in-place supported migration or parallel replacement clusters. Prove Azure CNI Overlay first in a representative canary, then migrate network mode and Cilium data plane in supported steps rather than combining unrelated changes. Use staged traffic shifts, SLO and connectivity gates, packet and policy evidence, explicit stop conditions, and capacity for fallback or redeployment. Expect pod IP changes and workload disruption, and validate DNS, service discovery, policy semantics, egress, and on-premises paths at each stage.",
+      "learnMore": [
+        {
+          "title": "Update Azure CNI IPAM mode and data plane technology",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/update-azure-cni"
+        },
+        {
+          "title": "Azure CNI Overlay networking concepts",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/concepts-network-azure-cni-overlay"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q13",
+      "question": "What does zero trust require for users, workloads, networks, artifacts, secrets, and administrative access in AKS?",
+      "topic": "end-to-end zero-trust design",
+      "answer": "Verify explicitly with phishing-resistant user authentication, Conditional Access, workload identities, signed and scanned artifacts, and policy checks at deployment and runtime. Apply least privilege through scoped Azure and Kubernetes RBAC, namespace and network segmentation, private access, controlled egress, Key Vault integration, secret rotation, and just-in-time administration. Assume breach by collecting tamper-resistant audit evidence, isolating workloads and runners, limiting credential lifetime and blast radius, and regularly testing detection, revocation, containment, and recovery.",
+      "learnMore": [
+        {
+          "title": "Microsoft Zero Trust guidance",
+          "url": "https://learn.microsoft.com/en-us/security/zero-trust/"
+        },
+        {
+          "title": "AKS cluster security best practices",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/operator-best-practices-cluster-security"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q14",
+      "question": "How would you provide useful logs, metrics, traces, and SLO views across hundreds of clusters without uncontrolled cost or cardinality?",
+      "topic": "fleet-scale observability",
+      "answer": "Standardize an OpenTelemetry and Azure Monitor collection profile, resource naming, correlation identifiers, SLO dashboards, and a minimal fleet-wide signal set while allowing justified workload extensions. Control cost with namespace and environment tiers, sampling, aggregation and recording rules, retention classes, metric allowlists, label governance, and limits on unbounded dimensions such as pod IDs or customer values. Route security and audit evidence to protected stores, expose usage and ingestion cost to owners, and continuously remove signals that do not support an alert, investigation, SLO, or business decision.",
+      "learnMore": [
+        {
+          "title": "Kubernetes monitoring with Azure Monitor",
+          "url": "https://learn.microsoft.com/en-us/azure/azure-monitor/containers/kubernetes-monitoring-overview"
+        },
+        {
+          "title": "Azure Monitor managed service for Prometheus",
+          "url": "https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/prometheus-metrics-overview"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q15",
+      "question": "Describe a production AKS decision you owned, the evidence behind it, the failure modes encountered, and the measurable outcome.",
+      "topic": "proof of production ownership",
+      "answer": "A strong answer names the business objective and decision authority, compares viable options using workload measurements, failure tests, security and cost evidence, and records the tradeoff that was accepted. It explains what failed in production or rehearsal, how the owner contained impact, updated the design and runbooks, and verified recovery. It closes with measured results such as SLO change, incident frequency, recovery time, deployment lead time, or unit cost, plus remaining risks rather than claiming perfect reliability.",
+      "learnMore": [
+        {
+          "title": "AKS Well-Architected service guide",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/service-guides/azure-kubernetes-service"
+        },
+        {
+          "title": "Shared responsibility in the cloud",
+          "url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q16",
+      "question": "What would you do if a fleet-wide policy or GitOps change began degrading clusters in several regions at different rates?",
+      "topic": "fleet incident containment",
+      "answer": "Stop promotion and reconciliation of the suspect change, isolate affected fleet groups, and preserve healthy regions rather than forcing global consistency during the incident. Use deployment, policy, Git, Kubernetes audit, and SLO evidence to establish scope and distinguish the change from a regional dependency failure. Weigh rollback risk against current customer harm, then revert or apply a narrowly tested mitigation through canaries with explicit stop conditions. Recover service in business-priority order, validate data and workload health, and retain evidence for root-cause analysis before resuming controlled rollout.",
+      "learnMore": [
+        {
+          "title": "Fleet update orchestration and staged rollouts",
+          "url": "https://learn.microsoft.com/en-us/azure/kubernetes-fleet/update-orchestration"
+        },
+        {
+          "title": "Overview of Azure Kubernetes Fleet Manager",
+          "url": "https://learn.microsoft.com/en-us/azure/kubernetes-fleet/overview"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q17",
+      "question": "What would you do if a region failed after replication lag had already exceeded the approved RPO?",
+      "topic": "executive disaster-recovery judgment",
+      "answer": "Declare that the approved RPO is already breached, preserve replication and transaction evidence, and quantify the latest consistent recovery point before making an irreversible failover decision. Present business owners with the tradeoff between restoring older consistent data, accepting possible loss or duplication, or waiting for a safer source, including customer, legal, and financial impact. Contain writes where needed to avoid split brain, recover dependencies and service in priority order, and validate integrity before reopening traffic. Communicate actual loss and recovery status plainly, then reconcile data and correct the replication, alerting, capacity, and rehearsal gaps that allowed the breach.",
+      "learnMore": [
+        {
+          "title": "Business continuity, high availability, and disaster recovery concepts",
+          "url": "https://learn.microsoft.com/en-us/azure/reliability/concept-business-continuity-high-availability-disaster-recovery"
+        },
+        {
+          "title": "AKS baseline architecture for multiple regions",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-multi-region/aks-multi-cluster"
+        }
+      ]
+    },
+    {
+      "id": "L400-Q18",
+      "question": "What would you do if evidence showed a privileged deployment workflow had been compromised across the enterprise platform?",
+      "topic": "enterprise credential compromise response",
+      "answer": "Freeze privileged deployments, disable the workflow and affected runners, revoke federated credentials, tokens, sessions, and role assignments, and isolate suspect identities, artifacts, and clusters while preserving forensic evidence. Determine scope from source-control, identity, runner, registry, Azure activity, admission, and Kubernetes audit records, and assume produced artifacts are untrusted until provenance is re-established. Balance service continuity against attacker persistence, using clean break-glass paths only for approved containment and business-critical recovery. Rebuild runners and workflows from known-good sources, rotate trust roots and secrets, redeploy verified artifacts, hunt for persistence, validate cluster and application state, and resume production in stages with executive and security approval.",
+      "learnMore": [
+        {
+          "title": "Incident response for a compromised application identity",
+          "url": "https://learn.microsoft.com/en-us/security/operations/incident-response-playbook-compromised-malicious-app"
+        },
+        {
+          "title": "AKS cluster security best practices",
+          "url": "https://learn.microsoft.com/en-us/azure/aks/operator-best-practices-cluster-security"
+        }
+      ]
+    }
+  ]
+}

@@ -259,7 +259,7 @@ class CourseStructureTests(unittest.TestCase):
             "Platform Engineer",
         ):
             self.assertIn(audience, bank_index)
-        self.assertIn("question-only resource", bank_index)
+        self.assertIn("question-only resources", bank_index)
 
     def test_question_bank_level_contracts(self) -> None:
         question_pattern = re.compile(

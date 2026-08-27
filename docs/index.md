@@ -11,7 +11,7 @@ Build practical Azure Kubernetes Service skills from your first Kubernetes workl
 | Path | Use it for | Start here |
 | --- | --- | --- |
 | Hands-on bootcamp | Five challenge-driven days with labs, failures, evidence, and cleanup | [Open the course map on GitHub](https://github.com/Naytron/aks-labs/blob/main/docs/course-map.md) |
-| Interview preparation | 72 progressive AKS questions for Cloud, DevOps, SRE, and Platform roles | <a href="{{ '/interview-questions/' | relative_url }}">Open the question bank</a> |
+| Interview preparation | 72 progressive AKS questions with answer guides and Microsoft Learn resources | <a href="{{ '/interview-questions/quiz/' | relative_url }}">Start the interactive quiz</a> |
 | Quick reference | Architecture, security, triage, operations, and ARC reminders | [Open the cheat sheets on GitHub](https://github.com/Naytron/aks-labs/tree/main/docs/cheatsheets) |
 
 ## Course progression

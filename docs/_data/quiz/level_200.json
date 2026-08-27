@@ -1,0 +1,278 @@
+{
+  "level": 200,
+  "title": "Intermediate",
+  "questions": [
+    {
+      "id": "L200-Q01",
+      "question": "How would you select a supported Kubernetes version and region features before creating an AKS cluster?",
+      "topic": "AKS version support and creation planning",
+      "answer": "Query the versions and capabilities available in the intended region, then choose a generally available Kubernetes version that is inside the AKS support window and compatible with required add-ons. Confirm subscription quotas, VM SKU capacity, availability zones, networking features, and upgrade policy in that region before creating the cluster.",
+      "learnMore": [
+        {
+          "title": "Supported Kubernetes versions in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/supported-kubernetes-versions"
+        },
+        {
+          "title": "AKS service quotas, limits, and regional availability",
+          "url": "https://learn.microsoft.com/azure/aks/quotas-skus-regions"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q02",
+      "question": "How would you plan a safe control-plane, node-pool, and node image upgrade sequence?",
+      "topic": "upgrade and node image operations",
+      "answer": "Check supported version hops, deprecated APIs, PDBs, quota, and subnet headroom, then upgrade the control plane before moving compatible node pools one at a time, starting with a canary pool. Configure an appropriate max surge, validate application and platform health after every stage, and schedule node OS image updates separately when useful; maintain a tested recovery plan because this process does not guarantee zero downtime.",
+      "learnMore": [
+        {
+          "title": "AKS upgrade options and recommendations",
+          "url": "https://learn.microsoft.com/azure/aks/upgrade-options"
+        },
+        {
+          "title": "Upgrade AKS node images",
+          "url": "https://learn.microsoft.com/azure/aks/node-image-upgrade"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q03",
+      "question": "How would you use multiple node pools, taints, tolerations, labels, and affinity to place workloads?",
+      "topic": "workload scheduling design",
+      "answer": "Keep system workloads on a system pool and create user pools for workloads with distinct operating system, VM size, isolation, or scaling needs. Apply taints to reserve specialized pools, add only the necessary tolerations, and use stable labels with required or preferred node affinity plus topology spread rules so placement is intentional and resilient.",
+      "learnMore": [
+        {
+          "title": "Create and manage multiple node pools in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/use-multiple-node-pools"
+        },
+        {
+          "title": "Advanced scheduler best practices for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/operator-best-practices-advanced-scheduler"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q04",
+      "question": "How do Azure CNI Overlay, flat Azure CNI, and legacy kubenet differ in IP use, routing, and migration concerns?",
+      "topic": "AKS network model selection",
+      "answer": "Azure CNI Overlay assigns VNet IPs only to nodes and private overlay IPs to pods, then SNATs pod traffic leaving the cluster; flat Azure CNI assigns VNet-routable addresses to pods and therefore consumes more VNet address space. Prefer Azure CNI Overlay with the Cilium data plane for modern deployments unless direct pod routing requires a flat model, and treat kubenet as legacy migration knowledge because it depends on route-table behavior and must be upgraded to Azure CNI Overlay through the supported migration process before retirement.",
+      "learnMore": [
+        {
+          "title": "Azure CNI Overlay networking overview",
+          "url": "https://learn.microsoft.com/azure/aks/concepts-network-azure-cni-overlay"
+        },
+        {
+          "title": "Update AKS networking to Azure CNI",
+          "url": "https://learn.microsoft.com/azure/aks/update-azure-cni"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q05",
+      "question": "How would you enforce and validate NetworkPolicy when using Azure CNI Overlay with Cilium?",
+      "topic": "network segmentation",
+      "answer": "Enable Azure CNI powered by Cilium, define namespace and pod-label conventions, and start each sensitive namespace with default-deny ingress and egress policies followed by explicit DNS and application dependency allowances. Validate from disposable pods on both allowed and denied paths, test name resolution and external dependencies, and use policy and flow telemetry to confirm that observed enforcement matches the manifests.",
+      "learnMore": [
+        {
+          "title": "Configure Azure CNI powered by Cilium",
+          "url": "https://learn.microsoft.com/azure/aks/azure-cni-powered-by-cilium"
+        },
+        {
+          "title": "Network policy options in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/use-network-policies"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q06",
+      "question": "How would you choose among Gateway API implementations, legacy Ingress, and LoadBalancer Services, and migrate from retiring ingress-nginx-based routing?",
+      "topic": "current application routing and migration",
+      "answer": "Use a supported Gateway API implementation for new HTTP routing and policy needs, retain legacy Ingress only as a transition, and use a LoadBalancer Service when direct Layer 4 exposure is sufficient. Inventory ingress-nginx annotations and behaviors, translate them to supported Gateway API resources, run and test the new path in parallel, then shift traffic gradually with health gates and a tested fallback rather than promising zero downtime.",
+      "learnMore": [
+        {
+          "title": "AKS application routing with Gateway API",
+          "url": "https://learn.microsoft.com/azure/aks/app-routing-gateway-api"
+        },
+        {
+          "title": "Ingress options in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/concepts-network-ingress"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q07",
+      "question": "How would you design VNet integration, private cluster DNS, and controlled egress for a private AKS cluster?",
+      "topic": "private networking and egress",
+      "answer": "Place nodes in a correctly sized, nondelegated subnet, expose the API server privately, and link the AKS private DNS zone to every management network that needs resolution; custom DNS must forward the private zone and required upstream queries correctly. If using API Server VNet Integration, create a separate /28-or-larger API-server subnet delegated to Microsoft.ContainerService/managedClusters. Route outbound traffic through an explicitly selected method such as a managed NAT gateway or Azure Firewall with user-defined routing, then validate effective routes, DNS, SNAT capacity, and firewall logs.",
+      "learnMore": [
+        {
+          "title": "Create a private AKS cluster",
+          "url": "https://learn.microsoft.com/azure/aks/private-clusters"
+        },
+        {
+          "title": "Control outbound traffic for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/outbound-rules-control-egress"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q08",
+      "question": "How do Azure Disk CSI and Azure Files CSI differ in access modes and workload fit?",
+      "topic": "AKS storage selection",
+      "answer": "Azure Disk CSI provides block storage that is typically mounted read-write by one node, making it a strong fit for latency-sensitive single-writer stateful workloads. Azure Files CSI provides shared SMB or NFS storage with read-write-many access, making it suitable when replicas or nodes must share files; choose after testing performance, protocol semantics, zone constraints, backup, and recovery requirements.",
+      "learnMore": [
+        {
+          "title": "Use Azure Disk CSI storage in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/azure-csi-disk-storage-provision"
+        },
+        {
+          "title": "Use Azure Files CSI storage in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/azure-csi-files-storage-provision"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q09",
+      "question": "When would you use Azure RBAC for Kubernetes Authorization instead of native Kubernetes RBAC?",
+      "topic": "authorization model tradeoffs",
+      "answer": "Use Azure RBAC for Kubernetes Authorization when an organization wants Microsoft Entra identities, Azure role assignments, scopes, and access reviews to govern both Azure resources and AKS data-plane access centrally. Use native Kubernetes RBAC when Kubernetes-native portability or custom rules beyond the Azure role model are more important, while avoiding overlapping grants that make effective access difficult to understand.",
+      "learnMore": [
+        {
+          "title": "Azure RBAC for Kubernetes Authorization in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/entra-id-authorization"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q10",
+      "question": "How would you migrate an existing workload from retired Azure AD Pod Identity to Microsoft Entra Workload Identity, and which federation changes would you validate?",
+      "topic": "workload identity modernization",
+      "answer": "Enable the AKS OIDC issuer and Workload Identity, update to a supported Azure Identity SDK, bind the pod to an annotated Kubernetes service account, and create a federated credential for the managed identity before testing the new path in parallel. Validate the exact issuer URL, subject in the form system:serviceaccount:namespace:name, audience api://AzureADTokenExchange, pod label, service account client ID, token scope, and Azure role assignments, then remove the retired Pod Identity components only after authentication evidence is clean.",
+      "learnMore": [
+        {
+          "title": "Migrate from pod-managed identity to Workload Identity",
+          "url": "https://learn.microsoft.com/azure/aks/workload-identity-migrate-from-pod-identity"
+        },
+        {
+          "title": "Microsoft Entra Workload Identity on AKS",
+          "url": "https://learn.microsoft.com/azure/aks/workload-identity-overview"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q11",
+      "question": "How do HPA, VPA, KEDA, and Cluster Autoscaler differ, and where can their decisions conflict?",
+      "topic": "autoscaling tool selection",
+      "answer": "HPA changes replica count from resource or custom metrics, VPA recommends or changes pod requests, KEDA drives event-based replica scaling through HPA, and Cluster Autoscaler adds or removes nodes in response to schedulability. HPA and VPA can fight when both act on the same CPU or memory signal, while stale requests, affinity, taints, PDBs, quotas, and mismatched replica or node limits can prevent pod and node scaling from converging.",
+      "learnMore": [
+        {
+          "title": "AKS scaling overview",
+          "url": "https://learn.microsoft.com/azure/aks/concepts-scale"
+        },
+        {
+          "title": "KEDA in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/keda-about"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q12",
+      "question": "How would you combine Container Insights, managed Prometheus, and Azure Managed Grafana for cluster operations?",
+      "topic": "monitoring platform design",
+      "answer": "Use Container Insights for Kubernetes inventory, events, and selected container logs, and use Azure Monitor managed service for Prometheus for platform and application time-series metrics. Connect Azure Managed Grafana to the managed Prometheus workspace for shared dashboards, then define consistent labels, recording rules, alerts, retention, and data collection rules so operators get useful signals without uncontrolled ingestion cost.",
+      "learnMore": [
+        {
+          "title": "Container Insights overview",
+          "url": "https://learn.microsoft.com/azure/azure-monitor/containers/container-insights-overview"
+        },
+        {
+          "title": "Azure Monitor managed service for Prometheus overview",
+          "url": "https://learn.microsoft.com/azure/azure-monitor/metrics/prometheus-metrics-overview"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q13",
+      "question": "How would you structure promotion and rollback with Flux or Argo CD across environments?",
+      "topic": "GitOps delivery",
+      "answer": "Keep environment-specific desired state in protected branches or directories, promote the same immutable artifact through reviewed pull requests, and let each environment's Flux or Argo CD reconciler apply only its authorized scope. Gate promotion on tests and observed health, and roll back by reverting Git to a previously verified state and confirming reconciliation, while retaining an operational recovery path because rollback does not guarantee zero downtime.",
+      "learnMore": [
+        {
+          "title": "GitOps with Flux v2 for Azure Arc and AKS",
+          "url": "https://learn.microsoft.com/azure/azure-arc/kubernetes/conceptual-gitops-flux2"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q14",
+      "question": "What controls would you add to an Azure DevOps or GitHub Actions pipeline deploying to AKS?",
+      "topic": "secure continuous delivery",
+      "answer": "Use workload federation instead of stored cloud credentials, least-privilege deployment identities, protected environments and approvals, pinned pipeline dependencies, and signed, scanned, immutable images. Validate manifests and policies before deployment, enforce AKS deployment safeguards, record provenance and audit evidence, and use staged rollout health gates with an explicit recovery action.",
+      "learnMore": [
+        {
+          "title": "Deployment safeguards in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/deployment-safeguards"
+        },
+        {
+          "title": "Use OpenID Connect with GitHub Actions and Azure",
+          "url": "https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q15",
+      "question": "Which utilization, purchase, and architecture signals would you use to reduce AKS cost without hiding reliability risk?",
+      "topic": "cost optimization",
+      "answer": "Measure node-pool CPU and memory utilization, pod requests versus use, idle capacity, autoscaler constraints, storage and network spend, and cost by workload before changing capacity. Right-size requests and VM SKUs, tune autoscaling, consolidate compatible pools, and use reservations, savings plans, or Spot only where workload behavior fits, while preserving SLO headroom, zone resilience, PDB capacity, upgrade surge, quota, and recovery requirements.",
+      "learnMore": [
+        {
+          "title": "Cost optimization best practices for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/best-practices-cost"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q16",
+      "question": "What would you do if an AKS upgrade stalled while workloads were protected by strict PodDisruptionBudgets?",
+      "topic": "upgrade disruption troubleshooting",
+      "answer": "Pause further upgrade activity and inspect the AKS operation, drain errors, pod events, PDB allowed disruptions, replica health, and the specific eviction that failed. Restore workload redundancy or correct unhealthy pods and make the PDB reflect real availability requirements before resuming one pool at a time; do not blindly delete the PDB or use an override until the disruption impact and recovery path are understood.",
+      "learnMore": [
+        {
+          "title": "Troubleshoot AKS upgrade failures caused by PDBs",
+          "url": "https://learn.microsoft.com/troubleshoot/azure/azure-kubernetes/create-upgrade-delete/error-code-poddrainfailure"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q17",
+      "question": "What would you do if Pods in a private cluster could resolve internal names but could not reach an approved external API?",
+      "topic": "DNS and egress diagnosis",
+      "answer": "Reproduce from a diagnostic pod and collect the resolved external address, connection and TLS result, NetworkPolicy decision, effective route and next hop, NSG state, firewall logs, and SNAT utilization before changing controls. Verify that the approved API and its DNS, redirect, certificate, or authentication dependencies are allowed through the configured egress path, then make the narrowest correction and retest both allowed and denied destinations.",
+      "learnMore": [
+        {
+          "title": "AKS outbound network and FQDN rules",
+          "url": "https://learn.microsoft.com/azure/aks/outbound-rules-control-egress"
+        },
+        {
+          "title": "Limit egress traffic in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/limit-egress-traffic"
+        }
+      ]
+    },
+    {
+      "id": "L200-Q18",
+      "question": "What would you do if KEDA added Pods but the Cluster Autoscaler did not provide enough schedulable nodes?",
+      "topic": "multi-layer autoscaling troubleshooting",
+      "answer": "Inspect pending pod events and Cluster Autoscaler status or logs to determine whether requests, taints, affinity, topology rules, node selectors, maximum node counts, quota, subnet capacity, or VM availability blocked scale-out. Align the workload with a node pool that can satisfy its constraints, correct the verified capacity or configuration limit, and cap KEDA against downstream and cluster capacity while validating the complete event-to-pod-to-node scaling path.",
+      "learnMore": [
+        {
+          "title": "Cluster autoscaling in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/cluster-autoscaler-overview"
+        },
+        {
+          "title": "KEDA in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/keda-about"
+        }
+      ]
+    }
+  ]
+}

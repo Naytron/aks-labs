@@ -1,0 +1,294 @@
+{
+  "level": 300,
+  "title": "Advanced",
+  "questions": [
+    {
+      "id": "L300-Q01",
+      "question": "How would you turn the AKS secure baseline into enforceable cluster, identity, network, and workload controls?",
+      "topic": "secure baseline implementation",
+      "answer": "Express the baseline as versioned infrastructure and policy: a private API server, Microsoft Entra ID and Azure RBAC, managed identities, restricted egress, network policies, and hardened node pools. Enforce workload requirements with Azure Policy and admission controls, grant least-privilege access through Workload Identity, and continuously audit drift and exceptions.",
+      "learnMore": [
+        {
+          "title": "Baseline architecture for an AKS cluster",
+          "url": "https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks/baseline-aks"
+        },
+        {
+          "title": "Built-in policy definitions for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/policy-reference"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q02",
+      "question": "How would you design private connectivity from workloads to Azure PaaS services without public exposure?",
+      "topic": "private endpoints and name resolution",
+      "answer": "Create each PaaS private endpoint in a controlled subnet, disable public network access, and allow only the required workload-to-endpoint paths through network and egress controls. Link the service-specific private DNS zones to the workload virtual network, forward those zones correctly through any custom DNS service, and validate DNS answers, routes, firewalls, and identity from a test pod.",
+      "learnMore": [
+        {
+          "title": "What is an Azure private endpoint?",
+          "url": "https://learn.microsoft.com/azure/private-link/private-endpoint-overview"
+        },
+        {
+          "title": "Azure Private DNS overview",
+          "url": "https://learn.microsoft.com/azure/dns/private-dns-overview"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q03",
+      "question": "How would you combine maintenance windows, upgrade channels, maxSurge, PodDisruptionBudgets (PDBs), and topology spread constraints?",
+      "topic": "controlled maintenance and availability",
+      "answer": "Use an upgrade channel for predictable patch intake and maintenance windows to constrain when control-plane and node work may begin. Size maxSurge against subnet, quota, and cost headroom, then set realistic PDBs and topology spread constraints so drains preserve enough replicas across nodes and zones; rehearse the combination because restrictive PDBs can block progress and no setting guarantees zero downtime.",
+      "learnMore": [
+        {
+          "title": "Use planned maintenance to schedule AKS maintenance",
+          "url": "https://learn.microsoft.com/azure/aks/planned-maintenance"
+        },
+        {
+          "title": "AKS upgrade options and recommendations",
+          "url": "https://learn.microsoft.com/azure/aks/upgrade-options"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q04",
+      "question": "What tests, health gates, and abort boundaries would you define for an AKS upgrade?",
+      "topic": "evidence-based upgrade safety",
+      "answer": "Before upgrading, test deprecated APIs, add-on compatibility, quota and subnet capacity, PDB drain behavior, backups, and representative application transactions in a production-like environment. Progress control plane and node pools in stages, gating each stage on SLOs, pod readiness, error rate, latency, and platform health; pause before the next stage when a threshold is breached, and use a tested recovery plan because Kubernetes version rollback is not generally available.",
+      "learnMore": [
+        {
+          "title": "AKS upgrade options and recommendations",
+          "url": "https://learn.microsoft.com/azure/aks/upgrade-options"
+        },
+        {
+          "title": "AKS day-2 patch and upgrade guidance",
+          "url": "https://learn.microsoft.com/azure/architecture/operator-guides/aks/aks-upgrade-practices"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q05",
+      "question": "How would you implement multi-tenancy across namespaces, identities, networks, quotas, nodes, and policy boundaries?",
+      "topic": "multi-tenant cluster design",
+      "answer": "Start with tenant trust and compliance requirements to decide whether a namespace, dedicated node pool, or separate cluster is the correct boundary, since a node is not a hard security boundary. For shared clusters, give each tenant separate namespaces and Workload Identities, scoped RBAC, default-deny network policies, quotas and limits, admission policy, and appropriate scheduling isolation, then monitor usage and cross-tenant access attempts.",
+      "learnMore": [
+        {
+          "title": "Multitenancy and AKS",
+          "url": "https://learn.microsoft.com/azure/architecture/guide/multitenant/service/aks"
+        },
+        {
+          "title": "AKS cluster isolation best practices",
+          "url": "https://learn.microsoft.com/azure/aks/operator-best-practices-cluster-isolation"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q06",
+      "question": "How would you trace a Workload Identity failure across service accounts, federated credentials, tokens, and Azure authorization?",
+      "topic": "Workload Identity deep troubleshooting",
+      "answer": "Verify the pod mutation, service account annotations, projected token file, and required client and tenant environment values, then decode the token to check issuer, subject, audience, and expiry. Match those claims exactly to the federated identity credential, confirm the managed identity and tenant, and finally inspect authorization and logs to prove that the identity has the control-plane actions, data-plane actions, or application permissions required by the intended API at the correct scope.",
+      "learnMore": [
+        {
+          "title": "Deploy and configure Workload Identity on AKS",
+          "url": "https://learn.microsoft.com/azure/aks/workload-identity-deploy-cluster"
+        },
+        {
+          "title": "Workload Identity overview",
+          "url": "https://learn.microsoft.com/azure/aks/workload-identity-overview"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q07",
+      "question": "How would you design Key Vault CSI secret rotation, and how should workloads behave during a Key Vault outage?",
+      "topic": "secret rotation and dependency resilience",
+      "answer": "Enable CSI autorotation with an interval suited to the secret lifetime, use least-privilege Workload Identity access, and make applications reload mounted files safely; values consumed only through environment variables require a controlled pod restart. During a Key Vault outage, healthy replicas should continue with the last valid in-memory or mounted value where policy permits, use bounded retries and circuit breaking, expose stale-secret health signals, and avoid destructive failover or logging secret material.",
+      "learnMore": [
+        {
+          "title": "Use the Azure Key Vault CSI Secrets Store provider for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/csi-secrets-store-driver"
+        },
+        {
+          "title": "Reliability in Azure Key Vault",
+          "url": "https://learn.microsoft.com/azure/reliability/reliability-key-vault"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q08",
+      "question": "How would you diagnose an unexpected traffic denial across Cilium policy, eBPF datapath, DNS, and Azure networking?",
+      "topic": "Cilium network troubleshooting",
+      "answer": "Start with the denied flow evidence and compare a working and failing pod by labels, namespace, node, destination, port, and DNS answer. Confirm which Cilium policies select each endpoint and inspect flow verdicts and datapath state, then trace outward through CoreDNS, routes, NSGs, firewalls, load balancers, and private endpoint DNS so the failing layer is isolated before changing policy.",
+      "learnMore": [
+        {
+          "title": "Azure CNI powered by Cilium",
+          "url": "https://learn.microsoft.com/azure/aks/azure-cni-powered-by-cilium"
+        },
+        {
+          "title": "Container Network Logs for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/container-network-observability-logs"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q09",
+      "question": "How would you derive AKS alerts and dashboards from service-level objectives instead of infrastructure thresholds alone?",
+      "topic": "SLO-based observability",
+      "answer": "Define user-facing availability and latency SLIs, targets, windows, and an error budget, then alert on fast and slow error-budget burn rather than every transient resource spike. Dashboards should correlate those SLIs with request errors, dependency health, deployment changes, saturation, pod and node signals, and enough dimensions to identify the affected service, tenant, zone, or version.",
+      "learnMore": [
+        {
+          "title": "Architecture strategies for defining reliability targets",
+          "url": "https://learn.microsoft.com/azure/well-architected/reliability/metrics"
+        },
+        {
+          "title": "Monitor AKS with Azure Monitor",
+          "url": "https://learn.microsoft.com/azure/aks/monitor-aks"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q10",
+      "question": "How would you isolate latency caused by application code, throttling, cgroups, CNI, storage, DNS, or an Azure dependency?",
+      "topic": "cross-layer performance analysis",
+      "answer": "Build a single timeline from distributed traces, request metrics, application profiles, throttling and cgroup counters, network and DNS telemetry, storage latency, and Azure dependency metrics. Compare controlled requests across pods, nodes, zones, versions, and direct dependency probes, changing one variable at a time; contain only the layer supported by evidence and verify recovery against the original SLI.",
+      "learnMore": [
+        {
+          "title": "Monitor AKS with Azure Monitor",
+          "url": "https://learn.microsoft.com/azure/aks/monitor-aks"
+        },
+        {
+          "title": "AKS monitoring data reference",
+          "url": "https://learn.microsoft.com/azure/aks/monitor-aks-reference"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q11",
+      "question": "How would you prevent unstable interactions among HPA, VPA, KEDA, Cluster Autoscaler, requests, and quotas?",
+      "topic": "autoscaling systems design",
+      "answer": "Assign one controller ownership of each scaling decision: do not let HPA and KEDA independently scale the same target, and avoid VPA request mutation on metrics that make HPA oscillate unless the supported mode is designed and tested. Set realistic requests, quota and node headroom, stabilization and cooldown windows, bounded min and max values, and Cluster Autoscaler settings that can satisfy pod topology, then load-test scale-up and scale-down together.",
+      "learnMore": [
+        {
+          "title": "AKS scaling overview: HPA, VPA, Cluster Autoscaler, and KEDA",
+          "url": "https://learn.microsoft.com/azure/aks/concepts-scale"
+        },
+        {
+          "title": "Cluster Autoscaler overview",
+          "url": "https://learn.microsoft.com/azure/aks/cluster-autoscaler-overview"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q12",
+      "question": "How would you design a stateful AKS workload across availability zones while respecting disk topology and failover limits?",
+      "topic": "zonal stateful architecture",
+      "answer": "Spread node pools and replicas across zones and use pod anti-affinity or topology spread, while a WaitForFirstConsumer storage class binds each zonal disk where its pod is scheduled. Because a zonal disk cannot simply attach in another zone, meet failover objectives with application-level replication or zone-redundant storage where supported, tested backups and restore, spare capacity, and PDBs that account for maintenance and zone loss.",
+      "learnMore": [
+        {
+          "title": "Configure availability zones in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/reliability-availability-zones-configure"
+        },
+        {
+          "title": "Azure Disk CSI driver for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/csi-storage-drivers#azure-disk-csi-driver"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q13",
+      "question": "How would you implement auditable GitOps promotion and rollback when the same manifests serve several environments?",
+      "topic": "production GitOps controls",
+      "answer": "Keep a reviewed common base with explicit environment overlays and immutable image digests, and give the GitOps controller in each environment only the permissions it needs. Promote the same tested commit or artifact through pull requests and protected refs with validation and recorded approvals; rollback by reverting to a known-good commit, let reconciliation apply it, and verify service health rather than editing the cluster manually.",
+      "learnMore": [
+        {
+          "title": "Application deployments with GitOps and Flux v2",
+          "url": "https://learn.microsoft.com/azure/azure-arc/kubernetes/conceptual-gitops-flux2"
+        },
+        {
+          "title": "Deploy applications using GitOps with Flux",
+          "url": "https://learn.microsoft.com/azure/azure-arc/kubernetes/tutorial-use-gitops-flux2"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q14",
+      "question": "How would you combine Defender for Containers, Azure Policy, Deployment Safeguards, image signing, and admission controls?",
+      "topic": "software supply-chain governance",
+      "answer": "Use signed images and verified provenance to establish artifact trust, admission controls and Azure Policy to reject noncompliant resources, and Deployment Safeguards to enforce AKS operational best practices. Add Defender for Containers for registry scanning, posture findings, and runtime detection, with audited time-bound exceptions and a tested break-glass path so overlapping controls remain understandable and recoverable.",
+      "learnMore": [
+        {
+          "title": "Use Deployment Safeguards to enforce AKS best practices",
+          "url": "https://learn.microsoft.com/azure/aks/deployment-safeguards"
+        },
+        {
+          "title": "Defender for Containers overview",
+          "url": "https://learn.microsoft.com/azure/defender-for-cloud/defender-for-containers-introduction"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q15",
+      "question": "How do you structure incident command, evidence collection, mitigation, recovery, and learning during a severe AKS incident?",
+      "topic": "production incident method",
+      "answer": "Assign an incident commander, operations and communications leads, define severity and update cadence, preserve a timestamped evidence trail, and separate facts from hypotheses. Choose the smallest reversible containment supported by evidence, record every action, restore through explicit health gates, and finish with a blameless review that produces owned corrective actions, runbook updates, and follow-up validation.",
+      "learnMore": [
+        {
+          "title": "Architecture strategies for an incident management process",
+          "url": "https://learn.microsoft.com/azure/well-architected/operational-excellence/incident-response"
+        },
+        {
+          "title": "Monitor AKS with Azure Monitor",
+          "url": "https://learn.microsoft.com/azure/aks/monitor-aks"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q16",
+      "question": "What would you do if a Cilium policy rollout isolated only some replicas and standard Kubernetes events showed no error?",
+      "topic": "eBPF datapath incident response",
+      "answer": "First preserve flow verdicts, policy revisions, endpoint maps, rollout history, pod and node placement, and packet evidence, then freeze the rollout and revert only the new policy to the last known-good version as safe containment. Compare working and failing replicas by labels, identity, node, DNS, and Cilium endpoint state, repair the proven policy or datapath fault, and canary the corrected policy before broad reapplication.",
+      "learnMore": [
+        {
+          "title": "Azure CNI powered by Cilium",
+          "url": "https://learn.microsoft.com/azure/aks/azure-cni-powered-by-cilium"
+        },
+        {
+          "title": "Container Network Logs for AKS",
+          "url": "https://learn.microsoft.com/azure/aks/container-network-observability-logs"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q17",
+      "question": "What would you do if a zonal failure coincided with an upgrade and protected stateful Pods could not reschedule?",
+      "topic": "compound availability incident",
+      "answer": "First preserve upgrade, scheduler, PDB, node, PVC, attachment, and zone-health evidence, then pause the upgrade and other voluntary disruptions while protecting writes and data as safe containment. Separate a PDB-blocked voluntary drain from Pending replacement Pods because PDBs govern eviction, not scheduling; investigate surviving-zone capacity, scheduling constraints, PVC node affinity, and disk zone topology for placement failures. Recover through the application's tested replica failover or restore procedure and safe capacity, then resume maintenance only after health gates pass.",
+      "learnMore": [
+        {
+          "title": "Configure availability zones in AKS",
+          "url": "https://learn.microsoft.com/azure/aks/reliability-availability-zones-configure"
+        },
+        {
+          "title": "AKS upgrade options and recommendations",
+          "url": "https://learn.microsoft.com/azure/aks/upgrade-options"
+        }
+      ]
+    },
+    {
+      "id": "L300-Q18",
+      "question": "What would you do if a signed image passed admission but runtime behavior suggested the build pipeline was compromised?",
+      "topic": "supply-chain incident containment",
+      "answer": "First preserve image digests, signatures, provenance, registry and build logs, runtime telemetry, and credential access records, then halt promotion, isolate affected workloads, and revoke compromised credentials or artifacts as safe containment. Treat a valid signature as identity evidence rather than proof of benign content, trace the breach through source and build dependencies, rebuild from reviewed source in a clean trusted pipeline, redeploy by digest, rotate exposed secrets, and hunt for persistence before recovery.",
+      "learnMore": [
+        {
+          "title": "Use Image Integrity to validate signed images on AKS (preview)",
+          "url": "https://learn.microsoft.com/azure/aks/image-integrity"
+        },
+        {
+          "title": "Defender for Containers overview",
+          "url": "https://learn.microsoft.com/azure/defender-for-cloud/defender-for-containers-introduction"
+        }
+      ]
+    }
+  ]
+}

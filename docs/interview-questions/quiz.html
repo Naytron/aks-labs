@@ -1,0 +1,825 @@
+---
+layout: null
+title: Interactive AKS Quiz
+permalink: /interview-questions/quiz/
+---
+<!--
+THESIS: A focused interview console that refuses the dashboard-of-cards pattern.
+OWN-WORLD: Dark charcoal workspace, deep rose controls, restrained borders, and task-first typography.
+STORY: Select a level, answer privately, reveal a concise guide, study first-party sources, and record confidence.
+FIRST VIEWPORT: Quiz purpose and controls lead directly into one large question with progress always visible.
+FORM: A sequential operating surface built around question, reveal, reflection, and navigation states.
+-->
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive AKS quiz with answer guides and Microsoft Learn resources from Level 100 through Level 400.">
+  <title>Interactive AKS Quiz</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.has("scoutTheme")) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    a {
+      color: var(--cp-link);
+    }
+
+    a:hover {
+      text-decoration-thickness: 2px;
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--cp-accent);
+      outline-offset: 3px;
+    }
+
+    .topbar {
+      border-bottom: 1px solid var(--cp-border);
+      background: var(--cp-bg-elevated);
+    }
+
+    .topbar__inner,
+    .page {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+      gap: 16px;
+    }
+
+    .brand {
+      color: var(--cp-text);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .page {
+      padding: 40px 0 64px;
+    }
+
+    .muted,
+    .shortcut {
+      color: var(--cp-text-soft);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin-bottom: 12px;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      line-height: 1.1;
+    }
+
+    .lede {
+      max-width: 720px;
+      margin-bottom: 32px;
+      color: var(--cp-text-soft);
+      font-size: 1.0625rem;
+    }
+
+    .panel,
+    .quiz-card,
+    .summary-card {
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-surface);
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border);
+    }
+
+    .panel {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    select,
+    .button {
+      min-height: 44px;
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 36px 8px 12px;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text);
+      cursor: pointer;
+    }
+
+    .button:hover:not(:disabled) {
+      border-color: var(--cp-accent);
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .button--primary {
+      border-color: var(--cp-accent);
+      background: var(--cp-accent);
+      color: var(--cp-accent-fg);
+      font-weight: 700;
+    }
+
+    .button--primary:hover:not(:disabled) {
+      border-color: var(--cp-accent-hover);
+      background: var(--cp-accent-hover);
+    }
+
+    .button--success {
+      border-color: var(--cp-success);
+    }
+
+    .button--review {
+      border-color: var(--cp-warning);
+    }
+
+    .button--success[aria-pressed="true"] {
+      background: var(--cp-success);
+      color: var(--cp-bg-elevated);
+    }
+
+    .button--review[aria-pressed="true"] {
+      background: var(--cp-warning);
+      color: var(--cp-bg-elevated);
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+    }
+
+    .progress-wrap {
+      margin-bottom: 16px;
+    }
+
+    .progress-meta,
+    .question-meta,
+    .score-row,
+    .quiz-actions,
+    .confidence-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-meta {
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.875rem;
+      color: var(--cp-text-soft);
+    }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+    }
+
+    .progress__bar {
+      width: 0;
+      height: 100%;
+      background: var(--cp-accent);
+    }
+
+    .quiz-card,
+    .summary-card {
+      padding: clamp(24px, 5vw, 48px);
+    }
+
+    .question-meta {
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-soft);
+      font-size: 0.8125rem;
+      font-weight: 700;
+    }
+
+    .badge--level {
+      border-color: var(--cp-accent);
+      background: var(--cp-accent-soft);
+      color: var(--cp-accent);
+    }
+
+    .question {
+      margin-bottom: 28px;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      line-height: 1.3;
+    }
+
+    .answer {
+      margin-top: 28px;
+      padding: 24px;
+      border: 1px solid var(--cp-accent);
+      border-radius: 0.625rem;
+      background: var(--cp-accent-soft);
+    }
+
+    .answer[hidden],
+    .summary-card[hidden],
+    .quiz-card[hidden] {
+      display: none;
+    }
+
+    .answer h3 {
+      margin-bottom: 8px;
+    }
+
+    .answer:not([hidden]) {
+      animation: answer-reveal 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .answer-guide {
+      white-space: pre-line;
+    }
+
+    .learn-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .confidence-actions {
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .quiz-actions {
+      justify-content: space-between;
+      margin-top: 28px;
+    }
+
+    .score-row {
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .score {
+      min-width: 140px;
+      padding: 8px 20px 8px 0;
+      border-right: 1px solid var(--cp-border);
+    }
+
+    .score:last-child {
+      border-right: 0;
+    }
+
+    .score strong {
+      display: block;
+      font-size: 1.5rem;
+    }
+
+    .error {
+      padding: 20px;
+      border: 1px solid var(--cp-danger);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-danger);
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 0.875rem;
+      color: var(--cp-text-soft);
+    }
+
+    @media (max-width: 720px) {
+      .panel {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar-actions {
+        align-items: stretch;
+      }
+
+      .toolbar-actions .button {
+        flex: 1;
+      }
+
+      .quiz-actions {
+        align-items: stretch;
+      }
+
+      .score-row {
+        align-items: stretch;
+      }
+
+      .score {
+        min-width: 0;
+        flex: 1 1 100%;
+        padding: 8px 0 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--cp-border);
+      }
+
+      .score:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .answer:not([hidden]) {
+        animation: none;
+      }
+    }
+
+    @keyframes answer-reveal {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+        clip-path: inset(0 0 12% 0);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        clip-path: inset(0);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="{{ '/' | relative_url }}">AKS Level 400 Bootcamp</a>
+      <button class="button" id="theme-toggle" type="button">Switch to light theme</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>AKS interview quiz</h1>
+    <p class="lede">Choose a level, answer each question before revealing the guide, then mark what you knew and what needs another review.</p>
+
+    <section class="panel" aria-label="Quiz controls">
+      <div class="field">
+        <label for="level-select">Question level</label>
+        <select id="level-select">
+          <option value="100">Level 100 - Fundamentals</option>
+          <option value="200">Level 200 - Intermediate</option>
+          <option value="300">Level 300 - Advanced</option>
+          <option value="400">Level 400 - Expert</option>
+          <option value="all">All levels - 72 questions</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="muted">Question order</span>
+        <button class="button" id="shuffle-button" type="button">Shuffle questions</button>
+      </div>
+      <div class="toolbar-actions">
+        <button class="button" id="restart-button" type="button">Restart</button>
+        <a class="button" href="{{ '/interview-questions/' | relative_url }}">Printable lists</a>
+      </div>
+    </section>
+
+    <div id="error-message" class="error" role="alert" hidden></div>
+
+    <section id="quiz-region" aria-live="polite">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="progress-text">Question 1 of 18</span>
+          <span id="score-text">0 known, 0 to review</span>
+        </div>
+        <div class="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress__bar" id="progress-bar"></div>
+        </div>
+      </div>
+
+      <article class="quiz-card" id="quiz-card">
+        <div class="question-meta">
+          <span class="badge badge--level" id="level-badge">Level 100</span>
+          <span class="badge" id="topic-badge">Topic</span>
+          <span class="badge" id="question-id">L100-Q01</span>
+        </div>
+        <h2 class="question" id="question-text" tabindex="-1"></h2>
+        <button class="button button--primary" id="reveal-button" type="button">Reveal answer</button>
+
+        <section class="answer" id="answer-panel" tabindex="-1" hidden>
+          <h3>Answer guide</h3>
+          <p class="answer-guide" id="answer-text"></p>
+          <h3>Learn more</h3>
+          <ul class="learn-list" id="learn-list"></ul>
+          <div class="confidence-actions" aria-label="Record confidence">
+            <button class="button button--success" id="known-button" type="button">I knew this</button>
+            <button class="button button--review" id="review-button" type="button">Review again</button>
+          </div>
+        </section>
+
+        <div class="quiz-actions">
+          <button class="button" id="previous-button" type="button">Previous</button>
+          <button class="button button--primary" id="next-button" type="button" disabled>Next question</button>
+        </div>
+      </article>
+
+      <section class="summary-card" id="summary-card" hidden>
+        <h2 id="summary-title" tabindex="-1">Level complete</h2>
+        <p>Use the review count to choose what to revisit in the hands-on labs and Microsoft Learn.</p>
+        <div class="score-row">
+          <div class="score"><strong id="summary-known">0</strong><span>Known</span></div>
+          <div class="score"><strong id="summary-review">0</strong><span>Review again</span></div>
+          <div class="score"><strong id="summary-unrated">0</strong><span>Unrated</span></div>
+        </div>
+        <button class="button button--primary" id="summary-restart-button" type="button">Run this quiz again</button>
+      </section>
+    </section>
+
+    <p class="footer-note">Keyboard: press R to reveal an answer, then use the left and right arrow keys to move between available questions.</p>
+  </main>
+
+  <script>
+    const QUIZ_DATA = {
+      "100": {{ site.data.quiz.level_100 | jsonify }},
+      "200": {{ site.data.quiz.level_200 | jsonify }},
+      "300": {{ site.data.quiz.level_300 | jsonify }},
+      "400": {{ site.data.quiz.level_400 | jsonify }}
+    };
+
+    const elements = {
+      levelSelect: document.getElementById("level-select"),
+      shuffleButton: document.getElementById("shuffle-button"),
+      restartButton: document.getElementById("restart-button"),
+      themeToggle: document.getElementById("theme-toggle"),
+      error: document.getElementById("error-message"),
+      quizCard: document.getElementById("quiz-card"),
+      summaryCard: document.getElementById("summary-card"),
+      progressText: document.getElementById("progress-text"),
+      scoreText: document.getElementById("score-text"),
+      progress: document.querySelector(".progress"),
+      progressBar: document.getElementById("progress-bar"),
+      levelBadge: document.getElementById("level-badge"),
+      topicBadge: document.getElementById("topic-badge"),
+      questionId: document.getElementById("question-id"),
+      questionText: document.getElementById("question-text"),
+      revealButton: document.getElementById("reveal-button"),
+      answerPanel: document.getElementById("answer-panel"),
+      answerText: document.getElementById("answer-text"),
+      learnList: document.getElementById("learn-list"),
+      knownButton: document.getElementById("known-button"),
+      reviewButton: document.getElementById("review-button"),
+      previousButton: document.getElementById("previous-button"),
+      nextButton: document.getElementById("next-button"),
+      summaryTitle: document.getElementById("summary-title"),
+      summaryKnown: document.getElementById("summary-known"),
+      summaryReview: document.getElementById("summary-review"),
+      summaryUnrated: document.getElementById("summary-unrated"),
+      summaryRestartButton: document.getElementById("summary-restart-button")
+    };
+
+    const state = {
+      questions: [],
+      index: 0,
+      responses: new Map(),
+      revealed: new Set(),
+      selectedLevel: "100"
+    };
+
+    function getQuestions(level) {
+      const questionsFor = (key) =>
+        QUIZ_DATA[key].questions.map((question) => ({ ...question, level: Number(key) }));
+      if (level === "all") {
+        return ["100", "200", "300", "400"].flatMap(questionsFor);
+      }
+      return questionsFor(level);
+    }
+
+    function updateUrl(level) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("level", level);
+      window.history.replaceState({}, "", url);
+    }
+
+    function countResponses(value) {
+      return Array.from(state.responses.values()).filter((response) => response === value).length;
+    }
+
+    function updateScore() {
+      elements.scoreText.textContent =
+        `${countResponses("known")} known, ${countResponses("review")} to review`;
+    }
+
+    function setThemeButtonLabel() {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      elements.themeToggle.textContent = isDark ? "Switch to light theme" : "Switch to dark theme";
+      elements.themeToggle.setAttribute("aria-pressed", String(isDark));
+    }
+
+    function toggleTheme() {
+      const next =
+        document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      const url = new URL(window.location.href);
+      url.searchParams.set("scoutTheme", next);
+      window.history.replaceState({}, "", url);
+      setThemeButtonLabel();
+    }
+
+    function showError(message) {
+      elements.error.textContent = message;
+      elements.error.hidden = false;
+      elements.quizCard.hidden = true;
+      elements.summaryCard.hidden = true;
+    }
+
+    function renderLearnLinks(links) {
+      elements.learnList.replaceChildren();
+      links.forEach((resource) => {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = resource.url;
+        link.textContent = resource.title;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        item.appendChild(link);
+        elements.learnList.appendChild(item);
+      });
+    }
+
+    function renderQuestion(focusQuestion = false) {
+      if (!state.questions.length) {
+        showError("No quiz questions are available for this level.");
+        return;
+      }
+
+      elements.error.hidden = true;
+      elements.quizCard.hidden = false;
+      elements.summaryCard.hidden = true;
+
+      const question = state.questions[state.index];
+      const isRevealed = state.revealed.has(question.id);
+      const response = state.responses.get(question.id);
+      const progress = Math.round(((state.index + 1) / state.questions.length) * 100);
+
+      elements.progressText.textContent = `Question ${state.index + 1} of ${state.questions.length}`;
+      elements.progress.setAttribute("aria-valuenow", String(progress));
+      elements.progressBar.style.width = `${progress}%`;
+      elements.levelBadge.textContent = `Level ${question.level}`;
+      elements.topicBadge.textContent = question.topic;
+      elements.questionId.textContent = question.id;
+      elements.questionText.textContent = question.question;
+      elements.answerText.textContent = question.answer;
+      renderLearnLinks(question.learnMore);
+
+      elements.answerPanel.hidden = !isRevealed;
+      elements.revealButton.hidden = isRevealed;
+      elements.previousButton.disabled = state.index === 0;
+      elements.nextButton.disabled = !isRevealed;
+      elements.nextButton.textContent =
+        state.index === state.questions.length - 1 ? "Finish quiz" : "Next question";
+      elements.knownButton.setAttribute("aria-pressed", String(response === "known"));
+      elements.reviewButton.setAttribute("aria-pressed", String(response === "review"));
+      updateScore();
+
+      if (focusQuestion) {
+        elements.questionText.focus();
+      }
+    }
+
+    function revealAnswer() {
+      const question = state.questions[state.index];
+      state.revealed.add(question.id);
+      renderQuestion();
+      elements.answerPanel.focus?.();
+    }
+
+    function markResponse(value) {
+      const question = state.questions[state.index];
+      state.responses.set(question.id, value);
+      updateScore();
+      renderQuestion();
+    }
+
+    function showSummary() {
+      const known = countResponses("known");
+      const review = countResponses("review");
+      const unrated = state.questions.length - known - review;
+      elements.quizCard.hidden = true;
+      elements.summaryCard.hidden = false;
+      elements.summaryTitle.textContent =
+        state.selectedLevel === "all" ? "All levels complete" : `Level ${state.selectedLevel} complete`;
+      elements.summaryKnown.textContent = String(known);
+      elements.summaryReview.textContent = String(review);
+      elements.summaryUnrated.textContent = String(unrated);
+      elements.summaryTitle.focus?.();
+    }
+
+    function nextQuestion() {
+      if (state.index >= state.questions.length - 1) {
+        showSummary();
+        return;
+      }
+      state.index += 1;
+      renderQuestion(true);
+    }
+
+    function previousQuestion() {
+      if (state.index === 0) {
+        return;
+      }
+      state.index -= 1;
+      renderQuestion(true);
+    }
+
+    function restartQuiz() {
+      state.index = 0;
+      state.responses.clear();
+      state.revealed.clear();
+      renderQuestion(true);
+    }
+
+    function shuffleQuiz() {
+      for (let index = state.questions.length - 1; index > 0; index -= 1) {
+        const target = Math.floor(Math.random() * (index + 1));
+        [state.questions[index], state.questions[target]] = [
+          state.questions[target],
+          state.questions[index]
+        ];
+      }
+      restartQuiz();
+    }
+
+    function selectLevel(level) {
+      if (level !== "all" && !QUIZ_DATA[level]) {
+        level = "100";
+      }
+      state.selectedLevel = level;
+      state.questions = getQuestions(level);
+      elements.levelSelect.value = level;
+      updateUrl(level);
+      restartQuiz();
+    }
+
+    elements.levelSelect.addEventListener("change", (event) => selectLevel(event.target.value));
+    elements.shuffleButton.addEventListener("click", shuffleQuiz);
+    elements.restartButton.addEventListener("click", restartQuiz);
+    elements.summaryRestartButton.addEventListener("click", restartQuiz);
+    elements.themeToggle.addEventListener("click", toggleTheme);
+    elements.revealButton.addEventListener("click", revealAnswer);
+    elements.knownButton.addEventListener("click", () => markResponse("known"));
+    elements.reviewButton.addEventListener("click", () => markResponse("review"));
+    elements.previousButton.addEventListener("click", previousQuestion);
+    elements.nextButton.addEventListener("click", nextQuestion);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.target instanceof HTMLSelectElement || event.target instanceof HTMLButtonElement) {
+        return;
+      }
+      if (event.key.toLowerCase() === "r" && !state.revealed.has(state.questions[state.index]?.id)) {
+        revealAnswer();
+      } else if (event.key === "ArrowLeft") {
+        previousQuestion();
+      } else if (event.key === "ArrowRight" && !elements.nextButton.disabled) {
+        nextQuestion();
+      }
+    });
+
+    const requestedLevel = new URLSearchParams(window.location.search).get("level") || "100";
+    const dataIsValid = ["100", "200", "300", "400"].every(
+      (key) => QUIZ_DATA[key] && Array.isArray(QUIZ_DATA[key].questions)
+    );
+
+    setThemeButtonLabel();
+    if (dataIsValid) {
+      selectLevel(requestedLevel);
+    } else {
+      showError("The quiz data could not be loaded. Use the printable question lists and report this Pages build.");
+    }
+  </script>
+</body>
+</html>

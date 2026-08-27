@@ -21,7 +21,7 @@
 - Use the failure injector only against clusters labeled `aks-course=level400`.
 - Keep the six [cheat sheets](cheatsheets/README.md) available as hint-level references.
 - On Days 1-4, require the learner to state current context and checkpoint before revealing the next hint.
-- Use the [Level 100-400 question bank](https://naytron.github.io/aks-labs/interview-questions/) for mock interviews. Probe reasoning and production evidence rather than accepting memorized definitions.
+- Use the [Level 100-400 interactive quiz](https://naytron.github.io/aks-labs/interview-questions/quiz/) for mock interviews. Require the learner to answer before revealing the guide, then probe reasoning and production evidence rather than accepting memorized definitions.
 
 ## Gate policy
 

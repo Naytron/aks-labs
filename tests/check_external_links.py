@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import concurrent.futures
 import re
 import time
@@ -21,6 +22,16 @@ def discover_links() -> list[str]:
             parsed = urllib.parse.urlparse(link)
             if parsed.hostname in ALLOWED_HOSTS:
                 links.add(urllib.parse.urlunparse(parsed._replace(fragment="")))
+    quiz_data = ROOT / "docs" / "_data" / "quiz"
+    if quiz_data.is_dir():
+        for data_file in quiz_data.glob("*.json"):
+            data = json.loads(data_file.read_text(encoding="utf-8"))
+            for question in data.get("questions", []):
+                for resource in question.get("learnMore", []):
+                    link = resource.get("url", "")
+                    parsed = urllib.parse.urlparse(link)
+                    if parsed.hostname in ALLOWED_HOSTS:
+                        links.add(urllib.parse.urlunparse(parsed._replace(fragment="")))
     return sorted(links)
 
 
