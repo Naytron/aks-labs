@@ -84,6 +84,7 @@ class QuizContentTests(unittest.TestCase):
             'id="answer-panel"',
             'id="known-button"',
             'id="review-button"',
+            ".button[hidden]",
             "site.data.quiz.level_100",
             "site.data.quiz.level_200",
             "site.data.quiz.level_300",
